@@ -5,17 +5,17 @@ from modelChecker.checks import all_checks
 from modelChecker.ui.check_widget import CheckWidget
 from modelChecker.ui.category_widget import CategoryWidget
 
-
 class ChecksUI(QtWidgets.QWidget):
     select_error_signal = QtCore.Signal(object)
     run_signal = QtCore.Signal(object)
     fix_signal = QtCore.Signal(object)
+    uncheck_passed_signal = QtCore.Signal()
     
     def __init__(self):
         super().__init__()
         
-        self.categories = {}
-        self.checks = {}
+        self.categories = {}  # Only stores CategoryWidget instances
+        self.checks = {}      # Only stores CheckWidget instances
         
         self.main_layout = QtWidgets.QVBoxLayout(self)
         self.content_widget = QtWidgets.QWidget()
@@ -29,20 +29,7 @@ class ChecksUI(QtWidgets.QWidget):
         self.scroll_area.setWidget(self.content_widget)
         self.scroll_area.setContentsMargins(0, 0, 0, 0)
 
-        group_box = QtWidgets.QWidget()
-        group_box_layout = QtWidgets.QHBoxLayout(group_box)
-
-        combo_box = QtWidgets.QComboBox(self)
-        combo_box.addItems(["Character Modelling", "Environment", "Vehicles"])
-        
-        settings_button = QtWidgets.QPushButton("\u2699")
-        settings_button.setMaximumWidth(30)
-        
-        group_box_layout.addWidget(QtWidgets.QLabel("Preset: "))
-        group_box_layout.addWidget(combo_box,1)
-        group_box_layout.addWidget(settings_button)
-
-        categories = sorted({ x.category for x in all_checks })
+        categories = sorted({x.category for x in all_checks})
         
         for category in categories:
             category_widget = CategoryWidget(category)
@@ -58,7 +45,6 @@ class ChecksUI(QtWidgets.QWidget):
             check_widget.select_error_signal.connect(self.handle_error_selected)
             check_widget.run_signal.connect(self.handle_run)
             check_widget.fix_signal.connect(self.handle_fix)
-
             
         self.content_layout.addStretch()
         
@@ -72,7 +58,7 @@ class ChecksUI(QtWidgets.QWidget):
         invert_button.clicked.connect(self.invert_checks)
         
         uncheck_passed_button = QtWidgets.QPushButton("Uncheck Passed")
-        uncheck_passed_button.clicked.connect(self.uncheck_passed)
+        uncheck_passed_button.clicked.connect(lambda: self.uncheck_passed_signal.emit())
         
         check_all_button = QtWidgets.QPushButton("Check All")
         check_all_button.clicked.connect(self.check_all)
@@ -82,20 +68,33 @@ class ChecksUI(QtWidgets.QWidget):
         button_layout.addWidget(uncheck_passed_button)
         button_layout.addWidget(check_all_button)
         
-        self.main_layout.addWidget(group_box)
         self.main_layout.addWidget(self.scroll_area)
         self.main_layout.addWidget(button_widget)
 
-    def get_all_active_checks(self):
-        active_checks = []
+
+    def reset_checks(self):
         for check_widget in self.checks.values():
-            if check_widget.is_checked():
-                active_checks.append(check_widget.check)
-        return active_checks
+            check_widget.reset_ui()  
     
-    def uncheck_passed(self):
+    def get_all_widgets(self, active: bool):
+        sorted_checks = sorted(self.checks.values(), key=lambda widget: (widget.check.category, widget.check.label))
+        check_widgets = []
+
+        for check_widget in sorted_checks:
+            if active:
+                if check_widget.is_checked():
+                    check_widgets.append(check_widget)
+            else:
+                check_widgets.append(check_widget)
+
+        return check_widgets
+    
+    def uncheck_passed(self, error_object):
         for check_widget in self.checks.values():
-            check_widget.set_checked(check_widget.check.has_errors())
+            name = check_widget.check.name
+            should_be_checked = name in error_object and len(error_object[name]) > 0
+            check_widget.set_checked(should_be_checked)
+
     
     def invert_checks(self):
         for check_widget in self.checks.values():
@@ -110,13 +109,10 @@ class ChecksUI(QtWidgets.QWidget):
             check_widget.set_checked(True)
             
     def handle_error_selected(self, check):
-        """Handle the error_selected_signal from CheckWidget and emit the select_error_signal."""
         self.select_error_signal.emit(check)
         
     def handle_fix(self, check):
-        """Handle the error_selected_signal from CheckWidget and emit the select_error_signal."""
         self.fix_signal.emit(check)
         
     def handle_run(self, check):
-        """Handle the error_selected_signal from CheckWidget and emit the select_error_signal."""
         self.run_signal.emit(check)

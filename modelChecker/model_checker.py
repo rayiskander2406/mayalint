@@ -1,11 +1,12 @@
 import maya.OpenMayaUI as omui
-import maya.api.OpenMaya as om
-from PySide6 import QtCore, QtWidgets, QtGui
+from PySide6 import QtCore, QtWidgets
 from shiboken6 import wrapInstance
 from modelChecker.constants import TITLE, OBJ_NAME
 from modelChecker.__version__ import __version__
 from modelChecker.ui.report_ui import ReportUI
 from modelChecker.ui.checks_ui import ChecksUI
+from modelChecker.ui.settings_ui import SettingsUI
+from modelChecker.ui.progress_ui import ProgressUI
 from modelChecker.runner import Runner
 
 def getMainWindow():
@@ -38,12 +39,21 @@ class UI(QtWidgets.QMainWindow):
     
     def extend_ui_classes(self):
         self.checks_ui = ChecksUI()
-        self.report_ui = ReportUI()
-        self.runner = Runner()
-        
         self.checks_ui.select_error_signal.connect(self.handle_error_selected)
         self.checks_ui.fix_signal.connect(self.handle_fix)
         self.checks_ui.run_signal.connect(self.handle_run)
+        self.checks_ui.uncheck_passed_signal.connect(self.handle_uncheck_passed)
+        
+        self.report_ui = ReportUI()
+        self.report_ui.verbosity_signal.connect(self.handle_verbose_level_change)
+        
+        self.progress_ui = ProgressUI()
+        self.settings_ui = SettingsUI()
+        
+        self.runner = Runner()
+        self.runner.result_signal.connect(self.handle_run_result)
+        self.runner.progress_signal.connect(self.handle_progress)
+        
         
     
     def build_ui(self):
@@ -52,11 +62,14 @@ class UI(QtWidgets.QMainWindow):
         main_layout = QtWidgets.QVBoxLayout(main_widget)
         splitter = QtWidgets.QSplitter()
         
-        
         report_buttons_widget = QtWidgets.QWidget()
         report_buttons_layout = QtWidgets.QHBoxLayout(report_buttons_widget)
         report_buttons_layout.addStretch()
-        report_buttons_layout.addWidget(QtWidgets.QPushButton("Clear"))
+        
+        clear_button = QtWidgets.QPushButton("Clear")
+        clear_button.clicked.connect(self.clear)
+        
+        report_buttons_layout.addWidget(clear_button)
         run_all_button = QtWidgets.QPushButton("Run Checks on Selected / All")
         run_all_button.clicked.connect(self.run_all)
         report_buttons_layout.addWidget(run_all_button)
@@ -64,36 +77,62 @@ class UI(QtWidgets.QMainWindow):
         left_widget = QtWidgets.QWidget()
         left_layout = QtWidgets.QVBoxLayout(left_widget)
         
-        left_layout.addWidget(self.report_ui)
-        left_layout.addWidget(report_buttons_widget)
+        left_layout.addWidget(self.settings_ui)
+        left_layout.addWidget(self.checks_ui)
         
-        splitter.addWidget(self.checks_ui)
+        right_widget = QtWidgets.QWidget()
+        right_layout = QtWidgets.QVBoxLayout(right_widget)
+        
+        right_layout.addWidget(self.progress_ui)
+        right_layout.addWidget(self.report_ui)
+        right_layout.addWidget(report_buttons_widget)
+        
         splitter.addWidget(left_widget)
+        splitter.addWidget(right_widget)
         main_layout.addWidget(splitter)
     
     def keyPressEvent(self, event):
         """Handle key press events."""
         if event.key() == QtCore.Qt.Key_Escape:
-            self.runner.interrupt() 
+            self.runner.stop() 
         else:
             super().keyPressEvent(event)
     
-    # individual widgets handles
     def handle_error_selected(self, check):
         """Handle the check selection and update the UI accordingly."""
         self.runner.select_error_nodes(check)
-        
         
     def handle_fix(self, check):
         """Handle the check selection and update the UI accordingly."""
         self.runner.fix(check)
         
-        
     def handle_run(self, check):
         """Handle the check selection and update the UI accordingly."""
-        self.runner.run(check)
-        
+        self.runner.run([check], False)
     
     def run_all(self):
-        active_checks = self.checks_ui.get_all_active_checks()
-        self.runner.run_all(active_checks)
+        active_checks_widgets = self.checks_ui.get_all_widgets(active=True)
+        self.runner.run(active_checks_widgets, refresh_context=True)
+        
+    def handle_uncheck_passed(self):
+        result_object = self.runner.get_result_object()
+        if "error_object" in result_object:
+            self.checks_ui.uncheck_passed(result_object['error_object'])
+    
+    def handle_progress(self, data):
+        self.progress_ui.update(data)
+        
+    def handle_run_result(self, result_object):
+        all_widgets = self.checks_ui.get_all_widgets(active=False)
+        self.report_ui.render_report(result_object, all_widgets)
+        
+    def handle_verbose_level_change(self):
+        all_widgets = self.checks_ui.get_all_widgets(active=False)
+        result_object = self.runner.get_result_object()
+        self.report_ui.render_report(result_object, all_widgets)
+    
+    def clear(self):
+        self.runner.reset_contexts()
+        self.checks_ui.reset_checks()
+        self.report_ui.clear()
+        self.progress_ui.reset()

@@ -1,5 +1,8 @@
-from PySide6 import QtWidgets, QtCore
+from PySide6 import QtWidgets, QtCore, QtGui
 from modelChecker.constants import SEVERITY_COLORS, PASS_COLOR
+from modelChecker.ui.check_tooltip_widget import CheckTooltipWidget
+
+INFO_SYMBOL = "\u24D8" # Unicode for 'ⓘ'
 
 class CheckWidget(QtWidgets.QWidget):
     select_error_signal = QtCore.Signal(object)
@@ -17,9 +20,16 @@ class CheckWidget(QtWidgets.QWidget):
         
         self.main_layout.setSpacing(4)
         self.main_layout.setContentsMargins(0, 0, 0, 0)
-        self.setStyleSheet(
-            "padding: 0px; margin: 0px;")
+        self.setStyleSheet("padding: 0px; margin: 0px;")
         
+        self.info_label = QtWidgets.QLabel(INFO_SYMBOL)
+        self.info_label.setAlignment(QtCore.Qt.AlignCenter)
+        self.info_label.setFixedWidth(20)
+        self.info_label.setCursor(QtGui.QCursor(QtCore.Qt.PointingHandCursor))
+        
+        self.tooltip = CheckTooltipWidget(self, self.check.description)
+        
+        # Main check label
         self.check_label = QtWidgets.QLabel(self.check.label)
         self.check_label.setMinimumWidth(180)
         
@@ -30,6 +40,7 @@ class CheckWidget(QtWidgets.QWidget):
         self.settings_layout.addWidget(QtWidgets.QLabel("This is here for sure!!"))
         
         self.enabled = QtWidgets.QCheckBox()
+        self.enabled.setCheckState(QtCore.Qt.Checked)
         self.enabled.setMaximumWidth(20)
         
         run_button = QtWidgets.QPushButton("Run")
@@ -56,6 +67,7 @@ class CheckWidget(QtWidgets.QWidget):
         else:
             settings_button.setEnabled(False)
         
+        self.body_layout.addWidget(self.info_label) 
         self.body_layout.addWidget(self.check_label)
         self.body_layout.addWidget(self.enabled)
         self.body_layout.addWidget(run_button)
@@ -64,16 +76,36 @@ class CheckWidget(QtWidgets.QWidget):
         self.body_layout.addWidget(settings_button)
         self.main_layout.addWidget(body_widget)
         self.main_layout.addWidget(self.settings_widget)
+        
+        self.info_label.installEventFilter(self)
+    
+    def eventFilter(self, obj, event):
+        if obj == self.info_label:
+            if event.type() == QtCore.QEvent.Enter:
+                self._show_tooltip()
+            elif event.type() == QtCore.QEvent.Leave:
+                self._hide_tooltip()
+        return super().eventFilter(obj, event)
+    
+    def _show_tooltip(self):
+        pos = self.info_label.mapToGlobal(self.info_label.rect().bottomRight())
+        self.tooltip.show_tooltip(pos)
+    
+    def _hide_tooltip(self):
+        self.tooltip.hide_tooltip()
     
     def _toggle_settings(self):
         self.settings_widget.setVisible(not self.settings_widget.isVisible())
         
-    def _update_ui(self):
-        if self.check.has_errors():
+    def update_ui(self, has_error=False):
+        if has_error:
             color = SEVERITY_COLORS.get(self.check.severity, "#000000")
             self.check_label.setStyleSheet(f'background-color: {color}')
         else:
             self.check_label.setStyleSheet(f'background-color: {PASS_COLOR}')
+            
+    def reset_ui(self):
+        self.check_label.setStyleSheet('background-color: none')
             
     def is_checked(self) -> bool:
         return self.enabled.isChecked()
@@ -83,12 +115,10 @@ class CheckWidget(QtWidgets.QWidget):
     
     def select_error(self):
         """Signal to the runner, to perform the errors"""
-        self.select_error_signal.emit(self.check)
+        self.select_error_signal.emit(self)
     
     def fix(self):
-        self.fix_signal.emit(self.check)
+        self.fix_signal.emit(self)
     
     def run(self):
-        self.run_signal.emit(self.check)
-        
-        
+        self.run_signal.emit(self)

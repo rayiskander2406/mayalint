@@ -40,3 +40,4 @@ class CategoryWidget(QtWidgets.QWidget):
         label = EXPANDED_LABEL if self.expanded else COLLAPSED_LABEL
         self.category_body_widget.setVisible(self.expanded)
         self.expand_button.setText(label)
+    
