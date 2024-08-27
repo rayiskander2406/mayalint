@@ -32,3 +32,11 @@ PASS_COLOR = "#446644"
 
 EXPANDED_LABEL = '\u2193'
 COLLAPSED_LABEL = '\u21B5'
+
+
+COMPONENT_MAPPING = {
+            NodeType.UV: ".map[{}]",
+            NodeType.VERTEX: ".vtx[{}]",
+            NodeType.EDGE: ".e[{}]",
+            NodeType.FACE: ".f[{}]",
+         }

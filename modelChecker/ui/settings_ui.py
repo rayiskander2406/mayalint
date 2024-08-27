@@ -1,7 +1,7 @@
 from PySide6 import QtWidgets, QtCore
 from modelChecker.constants import DataType
 
-PRESETS_EXAMPLES = ["Character Modelling", "Environment", "Vehicles"]
+PRESETS_EXAMPLES = ["Character Modeling", "Environment", "Vehicles"]
 
 class SettingsUI(QtWidgets.QWidget):
     change_preset_signal = QtCore.Signal(object)
@@ -20,6 +20,10 @@ class SettingsUI(QtWidgets.QWidget):
         self.settings_widget = QtWidgets.QWidget()
         self.settings_widget.setVisible(self.settings_expanded)
         expanded_settings_layout = QtWidgets.QVBoxLayout(self.settings_widget)
+        
+        # Create a QGroupBox named "Settings"
+        settings_group_box = QtWidgets.QGroupBox("Settings")
+        group_box_layout = QtWidgets.QVBoxLayout(settings_group_box)
         
         data_type_settings_widget = QtWidgets.QWidget()
         data_type_settings_layout = QtWidgets.QHBoxLayout(data_type_settings_widget)
@@ -43,7 +47,11 @@ class SettingsUI(QtWidgets.QWidget):
         data_type_settings_layout.addWidget(self.usd_radio)
         data_type_settings_layout.addWidget(self.both_radio)
         
-        expanded_settings_layout.addWidget(data_type_settings_widget)
+        # Add data_type_settings_widget to the group box layout
+        group_box_layout.addWidget(data_type_settings_widget)
+        
+        # Add the group box to the expanded settings layout
+        expanded_settings_layout.addWidget(settings_group_box)
         
         settings_layout.addWidget(self.preset_widget)
         settings_layout.addWidget(self.settings_widget)

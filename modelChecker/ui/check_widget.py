@@ -14,6 +14,7 @@ class CheckWidget(QtWidgets.QWidget):
         self.check = check()
         self.show_options = False
         
+        
         self.main_layout = QtWidgets.QVBoxLayout(self)
         body_widget = QtWidgets.QWidget()
         self.body_layout = QtWidgets.QHBoxLayout(body_widget)
@@ -27,7 +28,7 @@ class CheckWidget(QtWidgets.QWidget):
         self.info_label.setFixedWidth(20)
         self.info_label.setCursor(QtGui.QCursor(QtCore.Qt.PointingHandCursor))
         
-        self.tooltip = CheckTooltipWidget(self, self.check.description)
+        self.tooltip = CheckTooltipWidget(self, self.check.description, self.check.get_data_type())
         
         # Main check label
         self.check_label = QtWidgets.QLabel(self.check.label)

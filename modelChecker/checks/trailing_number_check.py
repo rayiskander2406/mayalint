@@ -16,3 +16,11 @@ class TrailingNumberCheck(ValidationCheckBase):
             if node_name and node_name[-1].isdigit():
                 output.append(node)
         return output
+    
+    def usd_run(self, runner):
+        output = []
+        for node in runner.get_usd_nodes():
+            if node[-1].isdigit():
+                output.append(node)
+        return output
+        

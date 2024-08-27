@@ -53,8 +53,7 @@ class UI(QtWidgets.QMainWindow):
         self.runner = Runner()
         self.runner.result_signal.connect(self.handle_run_result)
         self.runner.progress_signal.connect(self.handle_progress)
-        
-        
+        self.runner.error_signal.connect(self.handle_error_signal)
     
     def build_ui(self):
         main_widget = QtWidgets.QWidget(self)
@@ -98,9 +97,14 @@ class UI(QtWidgets.QMainWindow):
         else:
             super().keyPressEvent(event)
     
-    def handle_error_selected(self, check):
+    def handle_error_selected(self, checkwidget):
         """Handle the check selection and update the UI accordingly."""
-        self.runner.select_error_nodes(check)
+        result_object = self.runner.get_result_object()
+        
+        maya_object = result_object.get('maya_error_object', {})
+        usd_object = result_object.get('usd_error_object', {})
+        
+        checkwidget.check.do_select_error_nodes(maya_object, usd_object)
         
     def handle_fix(self, check):
         """Handle the check selection and update the UI accordingly."""
@@ -112,6 +116,7 @@ class UI(QtWidgets.QMainWindow):
         self.runner.run([check], data_type, refresh_context=False)
     
     def run_all(self):
+        self.checks_ui.reset_checks()
         active_checks_widgets = self.checks_ui.get_all_widgets(active=True)
         data_type = self.settings_ui.get_data_type()
         self.runner.run(active_checks_widgets, data_type)
@@ -130,9 +135,13 @@ class UI(QtWidgets.QMainWindow):
         
     def handle_verbose_level_change(self):
         result_object = self.runner.get_result_object()
-        if "error_object" in result_object:
+        if "maya_error_object" in result_object or "usd_error_object" in result_object:
             all_widgets = self.checks_ui.get_all_widgets(active=False)
             self.report_ui.render_report(result_object, all_widgets)
+    
+    def handle_error_signal(self, data):
+        self.report_ui.set_error(data['error'])
+        
     
     def clear(self):
         self.runner.reset_contexts()

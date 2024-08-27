@@ -26,3 +26,18 @@ class DuplicatedNamesCheck(ValidationCheckBase):
                 invalid.extend(uuids)
         return invalid
         
+
+    def usd_run(self, runner):
+        nodes_by_short_name = defaultdict(list)
+        
+        for node in runner.get_usd_nodes():
+            short_name = node.rsplit('/', 1)[-1]
+            nodes_by_short_name[short_name].append(node)
+        
+        invalid = []
+        
+        for node_names in nodes_by_short_name.values():
+            if len(node_names) > 1:
+                invalid.extend(node_names)
+                
+        return invalid

@@ -2,8 +2,8 @@
 from maya import cmds
 import mayaUsd.lib as mayaUsdLib
 
-def get_name_from_uuid(uuid):
-    node_name = cmds.ls(uuid, long=True)
+def get_name_from_uuid(uuid, long=True):
+    node_name = cmds.ls(uuid, long=long)
     if node_name:
         return node_name[0]
     return None
