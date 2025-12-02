@@ -101,6 +101,10 @@ mcCommandsList = {
     },
     "onBorder": {
         'label': 'On Border',
-        'category': 'UVs',   
+        'category': 'UVs',
+    },
+    "flippedNormals": {
+        'label': 'Flipped Normals',
+        'category': 'topology',
     }
 }

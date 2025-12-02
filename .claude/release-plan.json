@@ -1,0 +1,412 @@
+{
+  "project": "modelChecker Academic Extension",
+  "version": "0.2.0",
+  "description": "Extending modelChecker with 15 new academic criteria checks for digital design students",
+  "repository": "https://github.com/rayiskander2406/modelChecker",
+  "preview_url": "https://modelchecker-preview-guhxbb6ow-rayiskander2406s-projects.vercel.app",
+  "workflow": {
+    "description": "Standard workflow for implementing each new check",
+    "steps": [
+      {
+        "step": 1,
+        "name": "Implementation",
+        "tasks": [
+          "Create check function in modelChecker_commands.py",
+          "Follow existing code patterns and naming conventions",
+          "Add comprehensive docstring with algorithm, args, returns, limitations",
+          "Handle edge cases (empty selection, invalid geometry)"
+        ]
+      },
+      {
+        "step": 2,
+        "name": "Registration",
+        "tasks": [
+          "Add check to mcCommandsList in modelChecker_list.py",
+          "Assign correct category (naming, general, topology, UVs, materials, scene)",
+          "Use descriptive label for UI display"
+        ]
+      },
+      {
+        "step": 3,
+        "name": "Testing",
+        "tasks": [
+          "Create test file: tests/test_<check_id>.py",
+          "Include minimum 4 test cases: pass, fail, edge case, limitation",
+          "Document Maya test script for manual verification",
+          "Add test for empty selection handling"
+        ]
+      },
+      {
+        "step": 4,
+        "name": "Integration Testing",
+        "tasks": [
+          "Verify function signature matches UI expectations (nodes, SLMesh)",
+          "Verify return format matches UI parser (type, errors)",
+          "Check function name matches registration key exactly",
+          "Run Python syntax check on modified files",
+          "Cross-reference all registered commands have functions"
+        ]
+      },
+      {
+        "step": 5,
+        "name": "Documentation",
+        "tasks": [
+          "Add comprehensive docstring to function",
+          "Update CHECKS.md with full check documentation",
+          "Document known limitations with workarounds",
+          "Include 'Why It Matters' for academic context",
+          "Add 'How to Fix' instructions for Maya"
+        ]
+      },
+      {
+        "step": 6,
+        "name": "UI Preview Update",
+        "tasks": [
+          "Update checks-overview.html with new check details",
+          "Update index.html to show check as implemented",
+          "Deploy updated preview to Vercel",
+          "Verify mobile responsiveness"
+        ]
+      },
+      {
+        "step": 7,
+        "name": "Finalization",
+        "tasks": [
+          "Update release-plan.json status to completed",
+          "Update statistics counters",
+          "Create git commit with descriptive message",
+          "Push to remote repository",
+          "Update CHANGELOG.md"
+        ]
+      }
+    ]
+  },
+  "phases": {
+    "phase1": {
+      "name": "High Impact",
+      "description": "Catches most common student mistakes that result in major point deductions",
+      "priority": "critical",
+      "checks": [
+        {
+          "id": "flipped_normals",
+          "name": "Flipped/Reversed Normals",
+          "function": "flippedNormals",
+          "category": "topology",
+          "status": "completed",
+          "priority": 1,
+          "description": "Detect faces pointing wrong direction that render black",
+          "why_matters": "Reversed normals are one of the most common mistakes that cause renders to fail",
+          "tests": ["test_clean_cube", "test_reversed_cube", "test_partial_reversed_sphere", "test_empty_selection", "test_concave_limitation"],
+          "limitations": ["May give false positives on highly concave meshes"],
+          "started_at": "2025-12-02T08:15:00Z",
+          "completed_at": "2025-12-02T09:00:00Z",
+          "files_modified": [
+            "modelChecker/modelChecker_commands.py",
+            "modelChecker/modelChecker_list.py"
+          ],
+          "files_created": [
+            "tests/test_flipped_normals.py",
+            "CHECKS.md"
+          ]
+        },
+        {
+          "id": "overlapping_vertices",
+          "name": "Overlapping Vertices",
+          "function": "overlappingVertices",
+          "category": "topology",
+          "status": "not_started",
+          "priority": 2,
+          "description": "Detect vertices at same position causing shading/export issues",
+          "why_matters": "Overlapping vertices create invisible geometry issues that are hard to debug",
+          "algorithm_hint": "Compare vertex positions within tolerance threshold using MFnMesh.getPoints()",
+          "tests": [],
+          "limitations": [],
+          "started_at": null,
+          "completed_at": null
+        },
+        {
+          "id": "poly_count_limit",
+          "name": "Poly/Face Count Limit",
+          "function": "polyCountLimit",
+          "category": "general",
+          "status": "not_started",
+          "priority": 3,
+          "description": "Verify model stays within configurable polygon budget",
+          "why_matters": "Academic projects often have strict poly limits - exceeding means point deductions",
+          "algorithm_hint": "Count faces using MFnMesh.numPolygons, compare against configurable limit",
+          "tests": [],
+          "limitations": [],
+          "started_at": null,
+          "completed_at": null
+        },
+        {
+          "id": "missing_textures",
+          "name": "Missing Textures",
+          "function": "missingTextures",
+          "category": "materials",
+          "status": "not_started",
+          "priority": 4,
+          "description": "Detect broken file paths causing missing textures",
+          "why_matters": "Submitting a project with missing textures is a guaranteed way to lose points",
+          "algorithm_hint": "Query file texture nodes, check if referenced files exist on disk",
+          "tests": [],
+          "limitations": [],
+          "started_at": null,
+          "completed_at": null
+        },
+        {
+          "id": "default_materials",
+          "name": "Default Materials",
+          "function": "defaultMaterials",
+          "category": "materials",
+          "status": "not_started",
+          "priority": 5,
+          "description": "Detect objects still using lambert1 (unfinished work)",
+          "why_matters": "Default gray materials signal incomplete work to evaluators",
+          "algorithm_hint": "Check shading engine connections, flag initialShadingGroup assignments",
+          "tests": [],
+          "limitations": [],
+          "started_at": null,
+          "completed_at": null
+        },
+        {
+          "id": "scene_units",
+          "name": "Scene Units Verification",
+          "function": "sceneUnits",
+          "category": "scene",
+          "status": "not_started",
+          "priority": 6,
+          "description": "Ensure correct scene units (cm/m) for pipeline compatibility",
+          "why_matters": "Wrong units cause models to appear microscopic or gigantic in other software",
+          "algorithm_hint": "Query currentUnit -query -linear, validate against expected value",
+          "tests": [],
+          "limitations": [],
+          "started_at": null,
+          "completed_at": null
+        }
+      ]
+    },
+    "phase2": {
+      "name": "Professional Quality",
+      "description": "Industry-standard checks that demonstrate attention to detail and best practices",
+      "priority": "high",
+      "checks": [
+        {
+          "id": "uv_distortion",
+          "name": "UV Distortion/Stretching",
+          "function": "uvDistortion",
+          "category": "UVs",
+          "status": "not_started",
+          "priority": 7,
+          "description": "Detect stretched UVs causing blurry/warped textures",
+          "why_matters": "UV distortion ruins texture quality and is immediately visible in renders",
+          "algorithm_hint": "Calculate ratio between 3D face area and UV face area",
+          "tests": [],
+          "limitations": [],
+          "started_at": null,
+          "completed_at": null
+        },
+        {
+          "id": "texel_density",
+          "name": "Texel Density Consistency",
+          "function": "texelDensity",
+          "category": "UVs",
+          "status": "not_started",
+          "priority": 8,
+          "description": "Verify uniform pixel density across model",
+          "why_matters": "Inconsistent texel density makes some parts look sharp while others look blurry",
+          "algorithm_hint": "Measure pixels-per-unit ratio across UV shells, flag outliers",
+          "tests": [],
+          "limitations": [],
+          "started_at": null,
+          "completed_at": null
+        },
+        {
+          "id": "texture_resolution",
+          "name": "Texture Resolution",
+          "function": "textureResolution",
+          "category": "materials",
+          "status": "not_started",
+          "priority": 9,
+          "description": "Verify power-of-2 texture sizes (512, 1024, 2048)",
+          "why_matters": "Non-power-of-2 textures waste memory and may not load in game engines",
+          "algorithm_hint": "Read texture file dimensions, check if powers of 2",
+          "tests": [],
+          "limitations": [],
+          "started_at": null,
+          "completed_at": null
+        },
+        {
+          "id": "unused_nodes",
+          "name": "Unused Materials/Nodes",
+          "function": "unusedNodes",
+          "category": "scene",
+          "status": "not_started",
+          "priority": 10,
+          "description": "Detect scene clutter from unused materials and nodes",
+          "why_matters": "Scene clutter indicates unprofessional work habits and increases file size",
+          "algorithm_hint": "Trace node connections, identify materials with no mesh assignments",
+          "tests": [],
+          "limitations": [],
+          "started_at": null,
+          "completed_at": null
+        },
+        {
+          "id": "hidden_objects",
+          "name": "Hidden Objects Check",
+          "function": "hiddenObjects",
+          "category": "general",
+          "status": "not_started",
+          "priority": 11,
+          "description": "Detect forgotten hidden geometry",
+          "why_matters": "Hidden objects can unexpectedly appear in renders or cause file bloat",
+          "algorithm_hint": "Scan visibility attributes of all transform nodes",
+          "tests": [],
+          "limitations": [],
+          "started_at": null,
+          "completed_at": null
+        }
+      ]
+    },
+    "phase3": {
+      "name": "Polish",
+      "description": "Final professional touches that separate good work from excellent work",
+      "priority": "medium",
+      "checks": [
+        {
+          "id": "naming_convention",
+          "name": "Naming Convention",
+          "function": "namingConvention",
+          "category": "naming",
+          "status": "not_started",
+          "priority": 12,
+          "description": "Verify proper prefixes (geo_, grp_, mat_) configurable pattern",
+          "why_matters": "Proper naming shows professionalism and makes scenes easier to navigate",
+          "algorithm_hint": "Match node names against configurable regex patterns",
+          "tests": [],
+          "limitations": [],
+          "started_at": null,
+          "completed_at": null
+        },
+        {
+          "id": "hierarchy_depth",
+          "name": "Outliner Hierarchy Depth",
+          "function": "hierarchyDepth",
+          "category": "general",
+          "status": "not_started",
+          "priority": 13,
+          "description": "Verify logical grouping structure and depth limits",
+          "why_matters": "Deep messy hierarchies make scenes hard to work with",
+          "algorithm_hint": "Measure depth of each object in scene hierarchy tree",
+          "tests": [],
+          "limitations": [],
+          "started_at": null,
+          "completed_at": null
+        },
+        {
+          "id": "concave_faces",
+          "name": "Concave Faces",
+          "function": "concaveFaces",
+          "category": "topology",
+          "status": "not_started",
+          "priority": 14,
+          "description": "Detect concave polygons causing rendering artifacts",
+          "why_matters": "Concave faces triangulate unpredictably and may render incorrectly",
+          "algorithm_hint": "Analyze polygon vertex positions to determine convexity",
+          "tests": [],
+          "limitations": [],
+          "started_at": null,
+          "completed_at": null
+        },
+        {
+          "id": "intermediate_objects",
+          "name": "Intermediate Objects",
+          "function": "intermediateObjects",
+          "category": "general",
+          "status": "not_started",
+          "priority": 15,
+          "description": "Detect leftover construction geometry",
+          "why_matters": "Intermediate objects bloat file size and indicate unfinished cleanup",
+          "algorithm_hint": "Scan for shape nodes marked as intermediate",
+          "tests": [],
+          "limitations": [],
+          "started_at": null,
+          "completed_at": null
+        }
+      ]
+    }
+  },
+  "future_additions": [
+    {
+      "id": "edge_loop_flow",
+      "name": "Edge Loop Flow",
+      "category": "animation",
+      "description": "Verify proper edge loops at joints for deformation"
+    },
+    {
+      "id": "uv_padding",
+      "name": "UV Island Padding",
+      "category": "UVs",
+      "description": "Verify adequate padding between UV islands"
+    },
+    {
+      "id": "model_scale",
+      "name": "Real-World Scale",
+      "category": "scene",
+      "description": "Verify models are real-world scale"
+    },
+    {
+      "id": "symmetry_check",
+      "name": "Symmetry Validation",
+      "category": "topology",
+      "description": "Validate model symmetry if intended"
+    }
+  ],
+  "categories": {
+    "existing": ["naming", "general", "topology", "UVs"],
+    "new": ["materials", "scene"]
+  },
+  "statistics": {
+    "total_checks": 15,
+    "completed": 1,
+    "in_progress": 0,
+    "not_started": 14,
+    "original_checks": 27,
+    "target_total": 42
+  },
+  "quality_checklist": {
+    "code": [
+      "Function follows existing patterns",
+      "Docstring includes algorithm, args, returns, limitations",
+      "Edge cases handled gracefully",
+      "No hardcoded values where configurable needed",
+      "Python syntax valid"
+    ],
+    "testing": [
+      "Test file created with 4+ test cases",
+      "Pass case tested",
+      "Fail case tested",
+      "Edge cases tested",
+      "Limitations documented as test"
+    ],
+    "integration": [
+      "Function signature matches (nodes, SLMesh)",
+      "Return format matches (type, errors_dict)",
+      "Function name matches registration key",
+      "Check appears in UI under correct category"
+    ],
+    "documentation": [
+      "CHECKS.md updated",
+      "Why It Matters explained",
+      "How It Works described",
+      "Limitations listed with workarounds",
+      "How to Fix in Maya included"
+    ],
+    "preview": [
+      "checks-overview.html updated",
+      "index.html status updated",
+      "Deployed to Vercel",
+      "Mobile responsive verified"
+    ]
+  }
+}

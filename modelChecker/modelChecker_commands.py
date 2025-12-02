@@ -368,3 +368,77 @@ def parentGeometry(transformNodes, _):
                     if cmds.nodeType(child) == 'mesh':
                         parentGeometry.append(node)
     return "nodes", parentGeometry
+
+
+def flippedNormals(_, SLMesh):
+    """Detect faces with normals pointing inward (reversed/flipped normals).
+
+    This check identifies polygons whose normals point toward the mesh center
+    rather than outward, which typically causes rendering issues (black faces)
+    and problems with lighting calculations.
+
+    Algorithm:
+        1. Calculate mesh bounding box center as reference point
+        2. For each face, get its center and normal in world space
+        3. Calculate vector from mesh center to face center
+        4. If dot product of normal and this vector is negative,
+           the normal points inward (flipped)
+
+    Args:
+        _: Unused parameter (node list, maintained for API consistency)
+        SLMesh: MSelectionList containing mesh shapes to check
+
+    Returns:
+        tuple: ("polygon", dict) where dict maps UUID -> list of face indices
+               with flipped normals
+
+    Known Limitations:
+        - Uses bounding box center as reference, which works well for convex
+          and mostly-convex meshes (typical student/production models)
+        - May produce false positives on highly concave meshes where faces
+          legitimately point toward the bounding box center
+        - For complex concave geometry, consider using Maya's native
+          'Mesh Display > Reverse' or manual inspection
+
+    Academic Use:
+        This check is designed for academic evaluation where models are
+        expected to be "clean" with consistent outward-facing normals.
+        Students should review flagged faces and verify if they are
+        intentionally inward-facing or errors.
+    """
+    flippedNormals = defaultdict(list)
+    selIt = om.MItSelectionList(SLMesh)
+    while not selIt.isDone():
+        dagPath = selIt.getDagPath()
+        mesh = om.MFnMesh(dagPath)
+        fn = om.MFnDependencyNode(dagPath.node())
+        uuid = fn.uuid().asString()
+
+        # Get mesh bounding box center as reference point
+        boundingBox = mesh.boundingBox
+        meshCenter = boundingBox.center
+
+        faceIt = om.MItMeshPolygon(dagPath)
+        while not faceIt.isDone():
+            # Get face center and normal in world space
+            faceCenter = faceIt.center(om.MSpace.kWorld)
+            faceNormal = faceIt.getNormal(om.MSpace.kWorld)
+
+            # Vector from mesh center to face center
+            toFace = om.MVector(
+                faceCenter.x - meshCenter.x,
+                faceCenter.y - meshCenter.y,
+                faceCenter.z - meshCenter.z
+            )
+
+            # If normal points toward center (negative dot product), it's flipped
+            dotProduct = (faceNormal.x * toFace.x +
+                         faceNormal.y * toFace.y +
+                         faceNormal.z * toFace.z)
+
+            if dotProduct < 0:
+                flippedNormals[uuid].append(faceIt.index())
+
+            faceIt.next()
+        selIt.next()
+    return "polygon", flippedNormals
