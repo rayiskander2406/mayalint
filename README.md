@@ -10,9 +10,9 @@ MayaLint finds common issues in your Maya models - like flipped normals, overlap
 
 ### Step 1: Download
 
-Click the green **Code** button above, then click **Download ZIP**.
+Click the green button below to download MayaLint:
 
-![Download ZIP](https://img.shields.io/badge/1-Download%20ZIP-green?style=for-the-badge)
+[![Download ZIP](https://img.shields.io/badge/1-Download%20ZIP-green?style=for-the-badge)](https://github.com/rayiskander2406/modelChecker/archive/refs/heads/main.zip)
 
 ### Step 2: Unzip
 
