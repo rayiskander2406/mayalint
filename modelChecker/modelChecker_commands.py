@@ -1440,3 +1440,77 @@ def namingConvention(transformNodes, _):
             invalidNodes.append(node)
 
     return "nodes", invalidNodes
+
+
+# =============================================================================
+# Hierarchy Depth Configuration
+# =============================================================================
+# Maximum allowed hierarchy depth before flagging.
+# A depth of 1 means the object is at the root level.
+# Depth of 5 means: root > level1 > level2 > level3 > level4 > object
+HIERARCHY_DEPTH_MAX = 5
+
+
+def hierarchyDepth(transformNodes, _):
+    """Detect objects that are nested too deeply in the scene hierarchy.
+
+    This check identifies transform nodes that are nested beyond a configurable
+    maximum depth. Excessive hierarchy depth indicates poor scene organization
+    and can cause:
+    - Difficulty navigating the Outliner
+    - Confusion when working on teams
+    - Performance issues with very deep hierarchies
+    - Complications when exporting to game engines
+    - Unprofessional scene structure
+
+    Algorithm:
+        1. For each transform node, get its full DAG path
+        2. Count the number of '|' separators to determine depth
+        3. Compare against HIERARCHY_DEPTH_MAX threshold
+        4. Flag objects that exceed the maximum allowed depth
+
+    Args:
+        transformNodes: List of transform node UUIDs to check
+        _: MSelectionList (not used for this check)
+
+    Returns:
+        tuple: ("nodes", list) where list contains UUIDs of nodes
+               that are nested too deeply
+
+    Known Limitations:
+        - Does not consider whether deep nesting is intentional (rigs, etc.)
+        - Referenced objects may have additional depth from their source file
+        - Depth threshold is global, not context-aware
+        - Does not distinguish between group hierarchies and constraint targets
+
+    Academic Use:
+        Students often create deeply nested hierarchies accidentally by
+        repeatedly grouping objects or importing nested assets. Clean,
+        shallow hierarchies demonstrate good organizational skills and
+        make scenes easier to review and grade.
+    """
+    tooDeepNodes = []
+
+    for node in transformNodes:
+        nodeName = _getNodeName(node)
+        if not nodeName:
+            continue
+
+        # Get the full DAG path
+        try:
+            fullPath = cmds.ls(nodeName, long=True)
+            if not fullPath:
+                continue
+            fullPath = fullPath[0]
+        except Exception:
+            continue
+
+        # Count depth by counting '|' separators
+        # A path like "|grp1|grp2|geo" has depth 3
+        depth = fullPath.count('|')
+
+        # Check against threshold
+        if depth > HIERARCHY_DEPTH_MAX:
+            tooDeepNodes.append(node)
+
+    return "nodes", tooDeepNodes

@@ -150,5 +150,9 @@ mcCommandsList = {
     "namingConvention": {
         'label': 'Naming Convention',
         'category': 'naming',
+    },
+    "hierarchyDepth": {
+        'label': 'Hierarchy Depth',
+        'category': 'general',
     }
 }

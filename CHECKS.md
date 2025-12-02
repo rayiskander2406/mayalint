@@ -1029,6 +1029,87 @@ cmds.rename('group1', 'grp_props')
 
 ---
 
+### Hierarchy Depth
+
+**Category:** General
+**Function:** `hierarchyDepth`
+**Returns:** Nodes (transform nodes nested too deeply)
+
+#### Description
+
+Detects objects that are nested too deeply in the Maya scene hierarchy.
+Excessive depth indicates poor scene organization and can cause:
+- Difficulty navigating the Outliner
+- Confusion when working on teams
+- Performance issues with very deep hierarchies
+- Complications when exporting to game engines
+- Unprofessional scene structure
+
+#### How It Works
+
+1. For each transform node, get its full DAG path
+2. Count the number of `|` separators to determine depth
+3. Compare against `HIERARCHY_DEPTH_MAX` threshold (default: 5)
+4. Flag objects that exceed the maximum allowed depth
+
+#### Depth Examples
+
+| Path | Depth | Result |
+|------|-------|--------|
+| `\|geo_cube` | 1 | PASS |
+| `\|grp\|geo_cube` | 2 | PASS |
+| `\|grp1\|grp2\|grp3\|geo` | 4 | PASS |
+| `\|grp1\|grp2\|grp3\|grp4\|geo` | 5 | PASS (at threshold) |
+| `\|grp1\|grp2\|grp3\|grp4\|grp5\|geo` | 6 | FAIL |
+
+#### Known Limitations
+
+| Limitation | Impact | Workaround |
+|------------|--------|------------|
+| Intentional nesting | Rigs may need deep hierarchies | Review flagged objects case-by-case |
+| Referenced objects | May have depth from source file | Consider reference structure |
+| Global threshold | Not context-aware | Modify HIERARCHY_DEPTH_MAX for specific needs |
+| Constraint targets | Mixed with group hierarchies | Manual review |
+
+#### When This Check Helps
+
+- Grading student submissions for scene organization
+- Cleaning up scenes before handoff to other artists
+- Preparing for game engine export (Unity, Unreal)
+- Identifying accidentally nested geometry
+- Enforcing studio organization standards
+
+#### How to Fix
+
+In Maya, flatten the hierarchy:
+1. Select the deeply nested object
+2. Use `Edit > Parent > World` or press `Shift+P` to unparent
+3. Re-organize into a cleaner structure (max 3-4 levels recommended)
+
+Or use MEL/Python:
+```python
+import maya.cmds as cmds
+# Unparent to world
+cmds.parent('|grp1|grp2|grp3|grp4|grp5|geo_cube', world=True)
+# Re-parent to cleaner location
+cmds.parent('geo_cube', 'grp_geometry')
+```
+
+#### Test Cases
+
+| Test | Expected Result |
+|------|-----------------|
+| Depth 1 (root level) | PASS |
+| Depth 3 (shallow) | PASS |
+| Depth 5 (at threshold) | PASS |
+| Depth 6 (one over) | FAIL (flagged) |
+| Depth 7 (deep) | FAIL (flagged) |
+| Depth 10 (very deep) | FAIL (flagged) |
+| Mixed depths | Only deep ones flagged |
+| Empty selection | PASS (no crash) |
+
+---
+
 ## Adding New Checks
 
 To add a new check to modelChecker:

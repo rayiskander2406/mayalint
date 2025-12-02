@@ -662,11 +662,11 @@
                 name: 'Hierarchy Depth',
                 category: 'general',
                 phase: 3,
-                status: 'planned',
+                status: 'completed',
                 icon: '📂',
                 description: 'Checks that the outliner hierarchy is logically organized without excessive nesting depth.',
                 whyMatters: 'Deep, messy hierarchies make scenes hard to work with and indicate poor organization.',
-                howItWorks: 'Measures the depth of each object in the scene hierarchy tree.',
+                howItWorks: 'Counts pipe separators in DAG paths to measure depth, flags objects nested beyond threshold (default: 5 levels).',
                 commonCauses: 'Not organizing as you work, importing nested groups'
             },
             {
