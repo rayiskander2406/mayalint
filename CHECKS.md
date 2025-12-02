@@ -937,6 +937,98 @@ In Maya:
 
 ---
 
+### Naming Convention
+
+**Category:** Naming
+**Function:** `namingConvention`
+**Returns:** Nodes (transform nodes that don't follow naming conventions)
+
+#### Description
+
+Validates that scene objects follow proper naming conventions. Detects:
+1. **Maya default names**: pCube1, pSphere2, group1, etc.
+2. **Missing type prefixes**: Objects without geo_, grp_, jnt_, etc.
+
+Proper naming is essential for:
+- Professional scene organization
+- Easy asset identification in large scenes
+- Team collaboration and handoffs
+- Pipeline and script compatibility
+- Grading and review of student work
+
+#### How It Works
+
+1. For each transform node, get the short name (without DAG path)
+2. Strip trailing numbers to get the base name
+3. Check if base name matches any Maya default name patterns
+4. Determine the object type (mesh, group, joint, locator, etc.)
+5. Verify the name has an appropriate prefix for its type
+6. Flag objects that use default names OR lack proper prefixes
+
+#### Valid Prefixes by Type
+
+| Object Type | Valid Prefixes |
+|-------------|----------------|
+| Mesh | `geo_`, `mesh_`, `msh_`, `GEO_`, `MESH_` |
+| Group | `grp_`, `group_`, `GRP_`, `GROUP_` |
+| Joint | `jnt_`, `joint_`, `JNT_`, `JOINT_`, `bn_`, `bone_` |
+| Locator | `loc_`, `locator_`, `LOC_`, `LOCATOR_` |
+| Curve | `crv_`, `curve_`, `CRV_`, `CURVE_` |
+| Control | `ctrl_`, `control_`, `CTRL_`, `CONTROL_`, `con_` |
+| Camera | `cam_`, `camera_`, `CAM_`, `CAMERA_` |
+| Light | `lgt_`, `light_`, `LGT_`, `LIGHT_` |
+
+#### Known Limitations
+
+| Limitation | Impact | Workaround |
+|------------|--------|------------|
+| Prefix-based only | Doesn't validate suffix conventions | Use studio-specific validation |
+| Semantic validity | "geo_blah" passes | Manual review for meaningful names |
+| Style consistency | No camelCase/snake_case enforcement | Establish team guidelines |
+| Custom conventions | May not match all studio patterns | Modify NAMING_CONVENTION_PATTERNS |
+| Material names | Not validated | Separate material naming check |
+
+#### When This Check Helps
+
+- Grading student submissions (no more "pCube47" in final renders)
+- Enforcing studio naming standards
+- Preparing assets for pipeline integration
+- Team handoffs where naming consistency matters
+- Game engine exports that rely on naming patterns
+
+#### How to Fix
+
+In Maya, rename objects with proper prefixes:
+1. Select the object in the Outliner
+2. Double-click the name to edit
+3. Add appropriate prefix: `geo_`, `grp_`, `jnt_`, etc.
+4. Use descriptive names: `geo_mainBuilding` not `geo_cube`
+
+Or use MEL/Python:
+```python
+import maya.cmds as cmds
+# Rename a mesh
+cmds.rename('pCube1', 'geo_buildingBase')
+# Rename a group
+cmds.rename('group1', 'grp_props')
+```
+
+#### Test Cases
+
+| Test | Expected Result |
+|------|-----------------|
+| geo_cube (mesh with prefix) | PASS |
+| pCube1 (default mesh name) | FAIL (flagged) |
+| grp_props (group with prefix) | PASS |
+| group1 (default group name) | FAIL (flagged) |
+| jnt_spine01 (joint with prefix) | PASS |
+| loc_target (locator with prefix) | PASS |
+| GEO_building (uppercase prefix) | PASS |
+| Mixed valid/invalid scene | Only invalid flagged |
+| Empty selection | PASS (no crash) |
+
+---
+
 ## Adding New Checks
 
 To add a new check to modelChecker:

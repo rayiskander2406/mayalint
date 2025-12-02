@@ -146,5 +146,9 @@ mcCommandsList = {
     "hiddenObjects": {
         'label': 'Hidden Objects',
         'category': 'general',
+    },
+    "namingConvention": {
+        'label': 'Naming Convention',
+        'category': 'naming',
     }
 }

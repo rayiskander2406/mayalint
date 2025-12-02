@@ -650,11 +650,11 @@
                 name: 'Naming Convention',
                 category: 'naming',
                 phase: 3,
-                status: 'planned',
+                status: 'completed',
                 icon: '🏷️',
-                description: 'Validates that objects follow proper naming conventions with prefixes like geo_, grp_, mat_.',
+                description: 'Validates that objects follow proper naming conventions with prefixes like geo_, grp_, jnt_.',
                 whyMatters: 'Proper naming shows professionalism and makes scenes easier to navigate.',
-                howItWorks: 'Matches node names against configurable regex patterns for each node type.',
+                howItWorks: 'Detects Maya default names (pCube1, etc.) and validates type-appropriate prefixes (geo_, grp_, jnt_, loc_, etc.).',
                 commonCauses: 'Using Maya\'s default names, inconsistent naming across project'
             },
             {

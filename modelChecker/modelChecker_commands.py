@@ -1311,3 +1311,132 @@ def hiddenObjects(transformNodes, _):
             pass  # Skip nodes that fail to query
 
     return "nodes", hiddenNodes
+
+
+# =============================================================================
+# Naming Convention Patterns (Configurable)
+# =============================================================================
+# Standard Maya naming convention prefixes for different object types.
+# These follow common industry standards used in studios and schools.
+NAMING_CONVENTION_PATTERNS = {
+    'mesh': ['geo_', 'mesh_', 'msh_', 'GEO_', 'MESH_'],
+    'group': ['grp_', 'group_', 'GRP_', 'GROUP_'],
+    'joint': ['jnt_', 'joint_', 'JNT_', 'JOINT_', 'bn_', 'bone_'],
+    'locator': ['loc_', 'locator_', 'LOC_', 'LOCATOR_'],
+    'curve': ['crv_', 'curve_', 'CRV_', 'CURVE_'],
+    'control': ['ctrl_', 'control_', 'CTRL_', 'CONTROL_', 'con_'],
+    'camera': ['cam_', 'camera_', 'CAM_', 'CAMERA_'],
+    'light': ['lgt_', 'light_', 'LGT_', 'LIGHT_'],
+}
+
+# Default names created by Maya that should be flagged
+MAYA_DEFAULT_NAMES = {
+    'pCube', 'pSphere', 'pCylinder', 'pCone', 'pTorus', 'pPlane',
+    'pPyramid', 'pPipe', 'pHelix', 'pPrism', 'pDisc',
+    'nurbsSphere', 'nurbsCube', 'nurbsCylinder', 'nurbsCone', 'nurbsPlane',
+    'nurbsTorus', 'nurbsCircle', 'nurbsSquare',
+    'polySurface', 'transform', 'group', 'null', 'locator',
+    'curve', 'bezierCurve',
+}
+
+
+def namingConvention(transformNodes, _):
+    """Validate that objects follow proper naming conventions.
+
+    This check identifies objects that use Maya's default names (like pCube1,
+    pSphere2) or don't follow standard naming conventions with type prefixes.
+    Proper naming is essential for:
+    - Professional scene organization
+    - Easy asset identification
+    - Team collaboration
+    - Script and pipeline compatibility
+
+    Algorithm:
+        1. For each transform node, get its short name (without path)
+        2. Check if the name matches any of Maya's default names
+        3. Determine the object type (mesh, group, joint, etc.)
+        4. Check if the name has an appropriate prefix for its type
+        5. Flag objects that fail either check
+
+    Args:
+        transformNodes: List of transform node UUIDs to check
+        _: MSelectionList (not used for this check)
+
+    Returns:
+        tuple: ("nodes", list) where list contains UUIDs of nodes
+               that don't follow naming conventions
+
+    Known Limitations:
+        - Only checks for prefix-based naming (geo_, grp_, etc.)
+        - Does not enforce specific naming styles (camelCase, snake_case)
+        - Cannot detect semantic naming issues (e.g., "geo_blah" passes)
+        - Custom studio conventions may differ from built-in patterns
+        - Does not check material or shader node names
+
+    Academic Use:
+        Students often submit work with default names like "pCube1" and
+        "pSphere2", which indicates lack of attention to professional
+        standards. Properly named objects demonstrate understanding of
+        industry practices and make grading/review much easier.
+    """
+    invalidNodes = []
+
+    for node in transformNodes:
+        nodeName = _getNodeName(node)
+        if not nodeName:
+            continue
+
+        # Get the short name (without the DAG path)
+        shortName = nodeName.rsplit('|', 1)[-1]
+
+        # Remove any trailing numbers for base name check
+        baseName = shortName.rstrip('0123456789')
+
+        # Check 1: Is this a Maya default name?
+        if baseName in MAYA_DEFAULT_NAMES:
+            invalidNodes.append(node)
+            continue
+
+        # Check 2: Determine object type and verify prefix
+        shapes = cmds.listRelatives(nodeName, shapes=True, fullPath=True) or []
+
+        objectType = None
+        if shapes:
+            # Has shapes - check what type
+            shapeType = cmds.nodeType(shapes[0])
+            if shapeType == 'mesh':
+                objectType = 'mesh'
+            elif shapeType in ('nurbsCurve', 'bezierCurve'):
+                objectType = 'curve'
+            elif shapeType == 'locator':
+                objectType = 'locator'
+            elif shapeType == 'camera':
+                objectType = 'camera'
+            elif shapeType in ('pointLight', 'spotLight', 'directionalLight',
+                               'areaLight', 'ambientLight', 'volumeLight'):
+                objectType = 'light'
+            elif shapeType == 'joint':
+                objectType = 'joint'
+        else:
+            # No shapes - it's a group (empty transform)
+            children = cmds.listRelatives(nodeName, children=True) or []
+            if children:
+                objectType = 'group'
+            # Empty groups without children are handled elsewhere
+
+        # Check if the node is a joint (joints are transforms, not shapes)
+        if cmds.nodeType(nodeName) == 'joint':
+            objectType = 'joint'
+
+        # Skip objects without a defined type (empty groups, unknown types)
+        if objectType is None:
+            continue
+
+        # Check if name has valid prefix for its type
+        validPrefixes = NAMING_CONVENTION_PATTERNS.get(objectType, [])
+        hasValidPrefix = any(shortName.startswith(prefix) for prefix in validPrefixes)
+
+        if not hasValidPrefix:
+            invalidNodes.append(node)
+
+    return "nodes", invalidNodes
