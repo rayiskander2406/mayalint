@@ -122,5 +122,9 @@ mcCommandsList = {
     "defaultMaterials": {
         'label': 'Default Materials',
         'category': 'materials',
+    },
+    "sceneUnits": {
+        'label': 'Scene Units',
+        'category': 'scene',
     }
 }

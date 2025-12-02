@@ -574,11 +574,11 @@
                 name: 'Scene Units',
                 category: 'scene',
                 phase: 1,
-                status: 'planned',
+                status: 'completed',
                 icon: '📏',
                 description: 'Ensures the Maya scene is using correct units (centimeters, meters) for proper scale in renders and exports.',
                 whyMatters: 'Wrong units cause models to appear microscopic or gigantic in other software.',
-                howItWorks: 'Reads Maya\'s linear unit setting and validates against expected value.',
+                howItWorks: 'Queries cmds.currentUnit(linear=True) and compares against configurable EXPECTED_LINEAR_UNIT.',
                 commonCauses: 'Different default settings, imported files from other software'
             },
 

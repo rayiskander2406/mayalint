@@ -17,6 +17,7 @@ This document describes all available checks in modelChecker, including the acad
   - [Poly Count Limit](#poly-count-limit)
   - [Missing Textures](#missing-textures)
   - [Default Materials](#default-materials)
+  - [Scene Units](#scene-units)
 
 ---
 
@@ -416,6 +417,87 @@ Quick fix for multiple objects:
 
 ---
 
+### Scene Units
+
+**Category:** Scene
+**Function:** `sceneUnits`
+**Returns:** Nodes (special marker if units mismatch)
+
+#### Description
+
+Verifies that the scene's linear unit setting matches the expected standard (default: centimeters). Incorrect units are a common cause of scale issues when:
+- Exporting to game engines (Unity, Unreal)
+- Importing into other 3D software
+- Collaborating with team members
+- Submitting academic work for evaluation
+
+This is a **scene-level check** - it doesn't operate on individual objects.
+
+#### How It Works
+
+1. Queries Maya's current linear unit using `cmds.currentUnit(query=True, linear=True)`
+2. Compares against the expected unit (`EXPECTED_LINEAR_UNIT` constant, default: 'cm')
+3. Returns a special marker string if units don't match, empty list if correct
+
+#### Configuration
+
+To change the expected unit, edit `EXPECTED_LINEAR_UNIT` in `modelChecker_commands.py`:
+
+```python
+EXPECTED_LINEAR_UNIT = 'cm'  # Change to 'm', 'mm', 'in', 'ft' as needed
+```
+
+Common unit standards:
+| Software | Default Unit |
+|----------|--------------|
+| Maya | centimeters (cm) |
+| Unity | meters (m) |
+| Unreal Engine | centimeters (cm) |
+| Blender | meters (m) |
+| 3ds Max | varies by template |
+
+#### Known Limitations
+
+| Limitation | Impact | Workaround |
+|------------|--------|------------|
+| Linear units only | Angular/time units not checked | Manually verify if needed |
+| Hard-coded expected | Must edit code to change | Edit EXPECTED_LINEAR_UNIT |
+| No auto-fix | Won't scale existing geometry | Use Maya's unit preferences carefully |
+| Scene-level only | Applies to entire scene | N/A - this is expected behavior |
+
+#### When This Check Helps
+
+- **Before export**: Ensure correct scale for game engines
+- **Collaboration**: Catch unit mismatches before sharing files
+- **Assignment submission**: Meet course requirements for units
+- **Pipeline integration**: Ensure compatibility with studio workflows
+
+#### How to Fix
+
+In Maya:
+1. Go to **Window > Settings/Preferences > Preferences**
+2. Select **Settings** in the left panel
+3. Under **Working Units**, change **Linear** to the correct unit
+4. Click **Save**
+
+**Important**: Changing units does NOT scale existing geometry. If your model is already built at the wrong scale:
+1. Note the conversion factor (e.g., cm to m = ÷100)
+2. Select all geometry
+3. Scale uniformly by the conversion factor
+4. Freeze transformations
+
+#### Test Cases
+
+| Test | Expected Result |
+|------|-----------------|
+| Scene in centimeters (default) | PASS |
+| Scene in meters | FAIL (when expecting cm) |
+| Scene in millimeters | FAIL (when expecting cm) |
+| Scene in inches | FAIL (when expecting cm) |
+| Configurable expected unit | Respects EXPECTED_LINEAR_UNIT |
+
+---
+
 ## Adding New Checks
 
 To add a new check to modelChecker:
@@ -453,3 +535,4 @@ To add a new check to modelChecker:
 | 0.2.2 | Academic extension: Added polyCountLimit check |
 | 0.2.3 | Academic extension: Added missingTextures check |
 | 0.2.4 | Academic extension: Added defaultMaterials check |
+| 0.2.5 | Academic extension: Added sceneUnits check |

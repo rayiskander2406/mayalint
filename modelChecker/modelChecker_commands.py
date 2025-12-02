@@ -732,3 +732,68 @@ def defaultMaterials(transformNodes, _):
                     defaultMats.append(node)
 
     return "nodes", defaultMats
+
+
+# Expected linear units for academic projects (can be customized)
+# Common values: 'cm' (centimeters - Maya default, game engines)
+#               'm' (meters - architectural, some engines)
+#               'mm' (millimeters - precision work)
+EXPECTED_LINEAR_UNIT = 'cm'
+
+
+def sceneUnits(_, __):
+    """Verify scene linear units match the expected standard.
+
+    This check validates that the scene's linear unit setting matches the
+    expected value (default: centimeters). Incorrect units are a common
+    cause of scale issues when:
+    - Exporting to game engines (Unity, Unreal)
+    - Importing into other 3D software
+    - Collaborating with team members
+    - Submitting academic work for evaluation
+
+    Algorithm:
+        1. Query Maya's current linear unit using cmds.currentUnit()
+        2. Compare against the expected unit (EXPECTED_LINEAR_UNIT)
+        3. Return a special indicator if units don't match
+
+    Args:
+        _: Not used (scene-level check, not per-node)
+        __: Not used (scene-level check)
+
+    Returns:
+        tuple: ("nodes", list) where list contains a single special marker
+               'SCENE_UNITS_MISMATCH' if units don't match expected,
+               or empty list if units are correct
+
+    Configuration:
+        The expected unit is set via EXPECTED_LINEAR_UNIT at the top of
+        this file. Common values:
+        - 'cm' (centimeters) - Maya default, most game engines
+        - 'm' (meters) - architectural, some engines like Unreal
+        - 'mm' (millimeters) - precision/mechanical work
+        - 'in' (inches) - some US-based workflows
+        - 'ft' (feet) - architectural (US)
+
+    Known Limitations:
+        - Only checks linear units (not angular or time units)
+        - Does not auto-fix units (would require scaling all objects)
+        - Hard-coded expected value requires code edit to change
+
+    Academic Use:
+        Most 3D courses specify required units in their style guide.
+        Wrong units cause models to appear microscopic or gigantic
+        when imported into game engines or rendering software.
+        This is often caught too late during integration.
+    """
+    # Get current linear unit
+    currentUnit = cmds.currentUnit(query=True, linear=True)
+
+    # Check if it matches expected
+    if currentUnit != EXPECTED_LINEAR_UNIT:
+        # Return a special marker indicating scene-level issue
+        # The UI can display this appropriately
+        return "nodes", ['SCENE_UNITS_MISMATCH:{}_expected:{}'.format(
+            currentUnit, EXPECTED_LINEAR_UNIT)]
+
+    return "nodes", []
