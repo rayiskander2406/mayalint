@@ -1238,3 +1238,76 @@ def unusedNodes(_, __):
                 pass  # Skip problematic materials
 
     return "nodes", unusedNodesList
+
+
+def hiddenObjects(transformNodes, _):
+    """Detect hidden objects that may be forgotten in the scene.
+
+    This check identifies transform nodes that are hidden (visibility=False)
+    or have display layer visibility turned off. Hidden objects can cause:
+    - Unexpected geometry appearing in renders
+    - File size bloat from forgotten objects
+    - Confusion when collaborating with others
+    - Missing geometry in game engine exports
+    - Unprofessional scene organization
+
+    Algorithm:
+        1. For each transform node, check the 'visibility' attribute
+        2. Also check if the object is in a hidden display layer
+        3. Flag objects that are hidden by either method
+        4. Only check mesh shapes (not cameras, lights, etc.)
+
+    Args:
+        transformNodes: List of transform node UUIDs to check
+        _: MSelectionList (not used for this check)
+
+    Returns:
+        tuple: ("nodes", list) where list contains UUIDs of hidden
+               transform nodes
+
+    Known Limitations:
+        - Does not detect objects hidden via render layers
+        - Does not detect objects with visibility animated to 0
+        - May flag intentionally hidden reference geometry
+        - Does not check lodVisibility or template status
+        - Parent node visibility affects children (only direct visibility checked)
+
+    Academic Use:
+        Hidden objects are a common cause of issues when students submit
+        work. Objects hidden during work sessions can accidentally remain
+        in the file, causing unexpected renders or export issues. A clean
+        scene should only contain visible, necessary geometry.
+    """
+    hiddenNodes = []
+
+    for node in transformNodes:
+        nodeName = _getNodeName(node)
+
+        # Check if this transform has a mesh shape child
+        shapes = cmds.listRelatives(nodeName, shapes=True, fullPath=True) or []
+        hasMesh = any(cmds.nodeType(s) == 'mesh' for s in shapes)
+
+        if not hasMesh:
+            continue  # Skip non-mesh transforms (cameras, lights, etc.)
+
+        try:
+            # Check direct visibility attribute
+            visibility = cmds.getAttr(nodeName + '.visibility')
+            if not visibility:
+                hiddenNodes.append(node)
+                continue
+
+            # Check if object is in a hidden display layer
+            drawOverride = cmds.listConnections(nodeName + '.drawOverride',
+                                                 type='displayLayer') or []
+            for layer in drawOverride:
+                if layer != 'defaultLayer':  # Ignore default layer
+                    layerVisible = cmds.getAttr(layer + '.visibility')
+                    if not layerVisible:
+                        hiddenNodes.append(node)
+                        break
+
+        except Exception:
+            pass  # Skip nodes that fail to query
+
+    return "nodes", hiddenNodes

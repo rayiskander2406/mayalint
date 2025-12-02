@@ -842,6 +842,101 @@ In Maya:
 
 ---
 
+### Hidden Objects
+
+**Category:** General
+**Function:** `hiddenObjects`
+**Returns:** Nodes (hidden transform nodes with mesh shapes)
+
+#### Description
+
+Detects mesh objects that are hidden, either directly (visibility=False) or via display layers. Hidden objects can cause:
+- Unexpected geometry appearing in renders when visibility is restored
+- File size bloat from forgotten geometry
+- Confusion when collaborating with others
+- Missing geometry in game engine exports
+- Unprofessional scene organization
+
+A clean scene should only contain visible, necessary geometry.
+
+#### How It Works
+
+1. For each transform node in the selection, check if it has a mesh shape child
+2. Skip non-mesh objects (cameras, lights, locators, etc.)
+3. Check the `visibility` attribute directly on the transform
+4. Check if the object is connected to a display layer with visibility off
+5. Flag objects that are hidden by either method
+
+**What gets checked:**
+- Direct visibility attribute on transforms
+- Display layer visibility connections
+
+**What does NOT get checked (by design):**
+- Cameras, lights, locators (not mesh objects)
+- Render layer overrides
+- Animated visibility keyframes
+
+#### Known Limitations
+
+| Limitation | Impact | Workaround |
+|------------|--------|------------|
+| Render layers | Objects hidden via render layers not detected | Check render layer settings manually |
+| Animated visibility | Visibility animated to 0 not detected | Check animation curves |
+| Reference geometry | May flag intentional reference objects | Review before deleting |
+| LOD/Template | lodVisibility and template not checked | Check display settings manually |
+| Parent visibility | Only direct visibility, not inherited | Check parent hierarchy |
+
+#### When This Check Helps
+
+- **Scene cleanup**: Find forgotten hidden geometry before delivery
+- **File size optimization**: Remove unnecessary hidden objects
+- **Assignment submission**: Ensure only intentional geometry exists
+- **Before rendering**: Avoid surprise geometry appearing
+- **Collaboration**: Clean scenes for handoff to others
+
+#### How to Fix
+
+In Maya:
+
+1. **Show all hidden objects:**
+   - **Display > Show > All** (Ctrl+H to hide, Shift+H to show)
+   - Or use Outliner with "Show Hidden Objects" filter
+
+2. **Review and decide:**
+   - If the object is no longer needed, delete it
+   - If it should be visible, turn visibility back on
+   - If it's reference geometry, consider using a reference layer
+
+3. **Using Outliner:**
+   - Enable **Display > Objects > Hidden Objects** in Outliner
+   - Hidden objects appear grayed out
+   - Select and delete or show as needed
+
+4. **Display layers:**
+   - Check **Display > Display Layer Editor**
+   - Identify hidden layers
+   - Delete layer or make visible
+
+5. **Best practice:**
+   - Delete objects you don't need instead of hiding
+   - Use reference files for guide geometry
+   - Clean up hidden objects before saving final versions
+
+#### Test Cases
+
+| Test | Expected Result |
+|------|-----------------|
+| Visible mesh | PASS |
+| Hidden mesh (visibility=False) | FAIL (flagged) |
+| Object in hidden display layer | FAIL (flagged) |
+| Hidden camera | PASS (not a mesh) |
+| Hidden light | PASS (not a mesh) |
+| Multiple hidden objects | All flagged |
+| Mixed visible/hidden | Only hidden flagged |
+| Empty selection | PASS (no crash) |
+
+---
+
 ## Adding New Checks
 
 To add a new check to modelChecker:

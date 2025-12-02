@@ -142,5 +142,9 @@ mcCommandsList = {
     "unusedNodes": {
         'label': 'Unused Nodes',
         'category': 'scene',
+    },
+    "hiddenObjects": {
+        'label': 'Hidden Objects',
+        'category': 'general',
     }
 }
