@@ -672,6 +672,88 @@ Quick fix:
 
 ---
 
+### Texture Resolution
+
+**Category:** Materials
+**Function:** `textureResolution`
+**Returns:** Nodes (file texture nodes with non-power-of-2 textures)
+
+#### Description
+
+Detects file texture nodes where the image dimensions are not powers of 2 (e.g., 512, 1024, 2048, 4096). Non-power-of-2 textures cause problems because:
+- GPU memory is allocated in power-of-2 blocks, wasting space
+- Many game engines require or prefer power-of-2 textures
+- Mipmapping may not work correctly with non-power-of-2 textures
+- Performance can suffer with odd-sized textures
+
+This is a fundamental requirement in real-time graphics and game development.
+
+#### How It Works
+
+1. Find all `file` texture nodes in the scene
+2. For each file node, get the texture file path
+3. Query the image dimensions using Maya's `outSizeX`/`outSizeY` attributes
+4. Check if both width and height are powers of 2 using bit manipulation: `(n & (n-1)) == 0`
+5. Flag nodes where either dimension is not a power of 2
+
+**Valid power-of-2 sizes:** 1, 2, 4, 8, 16, 32, 64, 128, 256, 512, 1024, 2048, 4096, 8192
+
+#### Known Limitations
+
+| Limitation | Impact | Workaround |
+|------------|--------|------------|
+| File nodes only | Doesn't check procedural textures | Manual review for procedurals |
+| Requires file | Missing textures are skipped | Use missingTextures check first |
+| Load errors | Corrupted files are skipped | Check for Maya loading warnings |
+| UDIM/Animated | May only report first tile/frame | Manual verification for sequences |
+| NPOT support | Some modern engines allow NPOT | Adjust workflow if needed |
+
+#### When This Check Helps
+
+- **Game development**: Ensure textures meet engine requirements
+- **Performance optimization**: Avoid wasted GPU memory
+- **Pipeline compliance**: Meet studio texture standards
+- **Assignment submission**: Demonstrate understanding of real-time constraints
+- **Before export**: Catch resolution issues before engine import
+
+#### How to Fix
+
+In Maya or image editing software:
+
+1. **Resize textures** to nearest power-of-2:
+   - 1000x1000 → 1024x1024
+   - 500x500 → 512x512
+   - 1920x1080 → 2048x1024 (or 2048x2048)
+
+2. **Using Photoshop/GIMP:**
+   - Image > Image Size
+   - Set width and height to power-of-2 values
+   - Use appropriate resampling method
+
+3. **Best practice:**
+   - Plan texture sizes before painting
+   - Start with power-of-2 canvas
+   - Common sizes: 256, 512, 1024, 2048, 4096
+
+4. **Non-square textures** are fine if both dimensions are powers of 2:
+   - 1024x512 ✓
+   - 2048x1024 ✓
+   - 4096x2048 ✓
+
+#### Test Cases
+
+| Test | Expected Result |
+|------|-----------------|
+| Scene without textures | PASS |
+| 1024x1024 texture | PASS |
+| 1000x1000 texture | FAIL (flags texture) |
+| 1024x512 texture | PASS (non-square POT valid) |
+| Mixed valid/invalid | Only invalid flagged |
+| Missing texture file | Skipped (not flagged) |
+| Empty texture path | Skipped (not flagged) |
+
+---
+
 ## Adding New Checks
 
 To add a new check to modelChecker:

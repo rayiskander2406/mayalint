@@ -134,5 +134,9 @@ mcCommandsList = {
     "texelDensity": {
         'label': 'Texel Density',
         'category': 'UVs',
+    },
+    "textureResolution": {
+        'label': 'Texture Resolution',
+        'category': 'materials',
     }
 }

@@ -612,11 +612,11 @@
                 name: 'Texture Resolution',
                 category: 'materials',
                 phase: 2,
-                status: 'planned',
+                status: 'completed',
                 icon: '🖥️',
                 description: 'Verifies textures use power-of-2 resolutions (512, 1024, 2048) required by game engines.',
                 whyMatters: 'Non-power-of-2 textures waste memory and may not load in game engines.',
-                howItWorks: 'Reads texture file dimensions and checks if they are powers of 2.',
+                howItWorks: 'Queries texture outSizeX/outSizeY, checks if both dimensions are powers of 2 using bit manipulation.',
                 commonCauses: 'Arbitrary crop sizes, not following texture guidelines'
             },
             {

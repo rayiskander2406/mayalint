@@ -1047,3 +1047,99 @@ def texelDensity(_, SLMesh):
         selIt.next()
 
     return "polygon", densityErrors
+
+
+def _isPowerOfTwo(n):
+    """Check if a number is a power of 2.
+
+    Args:
+        n: Integer to check
+
+    Returns:
+        bool: True if n is a power of 2, False otherwise
+    """
+    if n <= 0:
+        return False
+    return (n & (n - 1)) == 0
+
+
+def textureResolution(_, __):
+    """Detect textures with non-power-of-2 resolutions.
+
+    This check identifies file texture nodes where the image dimensions are
+    not powers of 2 (e.g., 512, 1024, 2048, 4096). Non-power-of-2 textures
+    cause problems because:
+    - GPU memory is allocated in power-of-2 blocks, wasting space
+    - Many game engines require or prefer power-of-2 textures
+    - Mipmapping may not work correctly with non-power-of-2 textures
+    - Performance can suffer with odd-sized textures
+
+    Algorithm:
+        1. Find all 'file' texture nodes in the scene
+        2. For each file node, get the texture file path
+        3. Query the image dimensions using Maya's getAttr on outSize
+        4. Check if both width and height are powers of 2
+        5. Flag nodes where either dimension is not a power of 2
+
+    Args:
+        _: Not used (scene-wide check)
+        __: Not used (scene-wide check)
+
+    Returns:
+        tuple: ("nodes", list) where list contains UUIDs of file texture
+               nodes with non-power-of-2 resolutions
+
+    Known Limitations:
+        - Only checks 'file' node type (not procedural textures)
+        - Requires texture file to exist to read dimensions
+        - Cannot check textures that fail to load
+        - UDIM and animated textures may report unexpected sizes
+        - Some modern engines support non-power-of-2 (NPOT) textures
+
+    Academic Use:
+        Power-of-2 texture sizes are a fundamental requirement in game
+        development. Students learning real-time graphics need to
+        understand this constraint. Using improper texture sizes is a
+        common mistake that results in wasted memory and compatibility
+        issues when exporting to game engines.
+    """
+    import os
+
+    nonPowerOfTwoNodes = []
+
+    # Get all file texture nodes in the scene
+    fileNodes = cmds.ls(type='file') or []
+
+    for fileNode in fileNodes:
+        # Get the file path from the texture node
+        texturePath = cmds.getAttr(fileNode + '.fileTextureName')
+
+        # Skip if no path is set
+        if not texturePath:
+            continue
+
+        # Skip if file doesn't exist (missingTextures check handles this)
+        if not os.path.exists(texturePath):
+            continue
+
+        try:
+            # Get the output size of the texture (width, height)
+            # This queries the actual loaded image dimensions
+            outSizeX = cmds.getAttr(fileNode + '.outSizeX')
+            outSizeY = cmds.getAttr(fileNode + '.outSizeY')
+
+            # Check if both dimensions are powers of 2
+            if outSizeX and outSizeY:
+                width = int(outSizeX)
+                height = int(outSizeY)
+
+                if not _isPowerOfTwo(width) or not _isPowerOfTwo(height):
+                    # Get UUID for the file node
+                    uuid = cmds.ls(fileNode, uuid=True)
+                    if uuid:
+                        nonPowerOfTwoNodes.append(uuid[0])
+        except Exception:
+            # Skip nodes that fail to query (corrupted, missing, etc.)
+            pass
+
+    return "nodes", nonPowerOfTwoNodes
