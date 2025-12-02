@@ -33,7 +33,7 @@ KNOWN LIMITATIONS
    The check uses the base mesh polygon count.
 
 4. CONFIGURATION: The limit is set via POLY_COUNT_LIMIT variable in
-   modelChecker_commands.py. There's no UI to change it dynamically.
+   mayaLint_commands.py. There's no UI to change it dynamically.
 
 ================================================================================
 TEST CASES
@@ -58,7 +58,7 @@ Copy MAYA_TEST_SCRIPT into Maya's Script Editor and execute.
 MAYA_TEST_SCRIPT = '''
 import maya.cmds as cmds
 import maya.api.OpenMaya as om
-from modelChecker import modelChecker_commands as mc
+from mayaLint import mayaLint_commands as mc
 
 # Store original limit to restore after tests
 ORIGINAL_LIMIT = mc.POLY_COUNT_LIMIT
@@ -318,13 +318,13 @@ if __name__ == "__main__":
     print()
     print("  To execute tests:")
     print("    1. Open Maya")
-    print("    2. Ensure modelChecker is in your Python path")
+    print("    2. Ensure mayaLint is in your Python path")
     print("    3. Copy MAYA_TEST_SCRIPT into Script Editor")
     print("    4. Execute")
     print()
     print("  DEFAULT LIMIT: 10,000 polygons per mesh")
     print()
     print("  To customize the limit, edit POLY_COUNT_LIMIT in")
-    print("  modelChecker/modelChecker_commands.py")
+    print("  mayaLint/mayaLint_commands.py")
     print()
     print("=" * 70)

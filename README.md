@@ -1,4 +1,4 @@
-<h1 align="center">modelChecker - Academic Extension</h1>
+<h1 align="center">mayaLint - Academic Extension</h1>
 
 <p align="center">
   <strong>A Maya plugin for validating 3D models against academic and professional quality standards</strong>
@@ -16,7 +16,7 @@
 
 ## About This Project
 
-This is an **Academic Extension** of the original [modelChecker](https://github.com/JakobJK/modelChecker) plugin, specifically enhanced for digital design students to self-evaluate their 3D models before submission.
+This is an **Academic Extension** of the original [mayaLint](https://github.com/JakobJK/mayaLint) plugin, specifically enhanced for digital design students to self-evaluate their 3D models before submission.
 
 The extension adds new quality checks commonly required in academic evaluations, such as flipped normals detection, overlapping vertices, and more.
 
@@ -27,7 +27,7 @@ This project is built upon the excellent work of:
 - **[Jakob Kousholt](https://www.linkedin.com/in/jakobjk/)** - Original Author, Software Engineer
 - **[Niels Peter Kaagaard](https://www.linkedin.com/in/niels-peter-kaagaard-146b8a13)** - Original Author, Senior Modeler at Weta Digital
 
-Original repository: [github.com/JakobJK/modelChecker](https://github.com/JakobJK/modelChecker)
+Original repository: [github.com/JakobJK/mayaLint](https://github.com/JakobJK/mayaLint)
 
 ---
 
@@ -62,16 +62,16 @@ C:\Users\<YourUsername>\Documents\maya\scripts\
 
 ### Step 3: Copy Files
 
-Copy the `modelChecker` folder (the one containing `modelChecker_UI.py`) into your Maya scripts directory.
+Copy the `mayaLint` folder (the one containing `mayaLint_UI.py`) into your Maya scripts directory.
 
 Your folder structure should look like:
 ```
 maya/
 └── scripts/
-    └── modelChecker/
-        ├── modelChecker_UI.py
-        ├── modelChecker_commands.py
-        ├── modelChecker_list.py
+    └── mayaLint/
+        ├── mayaLint_UI.py
+        ├── mayaLint_commands.py
+        ├── mayaLint_list.py
         └── ...
 ```
 
@@ -87,27 +87,27 @@ maya/
    - Paste the following code:
 
    ```python
-   from modelChecker import modelChecker_UI
-   modelChecker_UI.UI.show_UI()
+   from mayaLint import mayaLint_UI
+   mayaLint_UI.UI.show_UI()
    ```
 
 4. **Create a shelf button**
    - Select all the code you just pasted
    - Go to `File` → `Save Script to Shelf...`
-   - Enter a name (e.g., "ModelChecker")
+   - Enter a name (e.g., "MayaLint")
    - Click OK
 
-5. **Done!** You now have a shelf button to launch modelChecker.
+5. **Done!** You now have a shelf button to launch mayaLint.
 
 ### Troubleshooting
 
-**"No module named modelChecker" error:**
-- Make sure the `modelChecker` folder is directly inside the `scripts` folder
-- Make sure you copied the inner `modelChecker` folder, not the outer repository folder
+**"No module named mayaLint" error:**
+- Make sure the `mayaLint` folder is directly inside the `scripts` folder
+- Make sure you copied the inner `mayaLint` folder, not the outer repository folder
 - Restart Maya after installing
 
 **Plugin doesn't appear:**
-- Check that all `.py` files are present in the modelChecker folder
+- Check that all `.py` files are present in the mayaLint folder
 - Verify you're using a compatible Maya version (2022+)
 
 ---
@@ -176,7 +176,7 @@ This extension was created to help digital design students validate their work a
 ### Recommended Workflow
 
 1. **Model** your object
-2. **Run modelChecker** with all checks enabled
+2. **Run mayaLint** with all checks enabled
 3. **Fix critical issues** (Flipped Normals, Overlapping Vertices, Non-Manifold)
 4. **Review other warnings** and fix as needed
 5. **Re-run checks** to verify fixes
@@ -205,12 +205,12 @@ See: **[CHECKS.md](./CHECKS.md)**
 
 ## License
 
-This project is licensed under the [MIT License](https://rem.mit-license.org/), same as the original modelChecker.
+This project is licensed under the [MIT License](https://rem.mit-license.org/), same as the original mayaLint.
 
 ---
 
 ## Acknowledgments
 
-Special thanks to **Jakob Kousholt** and **Niels Peter Kaagaard** for creating and open-sourcing the original modelChecker plugin. Their work has helped countless artists validate their 3D models.
+Special thanks to **Jakob Kousholt** and **Niels Peter Kaagaard** for creating and open-sourcing the original mayaLint plugin. Their work has helped countless artists validate their 3D models.
 
 If you find this tool useful, consider supporting the original authors on [Gumroad](https://jakejk.gumroad.com/l/htZYj).

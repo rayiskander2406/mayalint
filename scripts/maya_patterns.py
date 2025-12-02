@@ -1,7 +1,7 @@
 """
-Maya API Pattern Library for modelChecker
+Maya API Pattern Library for mayaLint
 
-This file contains common Maya API patterns used in modelChecker checks.
+This file contains common Maya API patterns used in mayaLint checks.
 Copy and adapt these patterns for new check implementations.
 
 Usage:

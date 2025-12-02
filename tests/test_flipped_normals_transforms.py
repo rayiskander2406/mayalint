@@ -46,7 +46,7 @@ The test will report PASS/FAIL for each case and summarize results.
 MAYA_TEST_SCRIPT = '''
 import maya.cmds as cmds
 import maya.api.OpenMaya as om
-from modelChecker import modelChecker_commands as mc
+from mayaLint import mayaLint_commands as mc
 
 def get_selection_list(shape):
     """Helper to create MSelectionList from shape name."""
@@ -477,7 +477,7 @@ if __name__ == "__main__":
     print()
     print("  TO RUN:")
     print("    1. Open Maya")
-    print("    2. Ensure modelChecker is in your Python path")
+    print("    2. Ensure mayaLint is in your Python path")
     print("    3. Copy MAYA_TEST_SCRIPT into Script Editor")
     print("    4. Execute")
     print()

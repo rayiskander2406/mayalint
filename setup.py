@@ -2,7 +2,7 @@ from setuptools import setup, find_packages
 
 
 def get_version():
-    with open("modelChecker/__version__.py", "r") as f:
+    with open("mayaLint/__version__.py", "r") as f:
         for line in f:
             if line.startswith("__version__"):
                 return line.split("=")[-1].strip().strip('"')
@@ -10,7 +10,7 @@ def get_version():
 
 
 setup(
-    name="modelChecker",
+    name="mayaLint",
     version=get_version(),
     description="Sanity checking tool for polygon models in Maya",
     author="Jakob Kousholt, Niels Peter Kaagaard",

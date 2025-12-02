@@ -2,7 +2,7 @@
 """
 Check Scaffold Generator
 
-Generates boilerplate code for new modelChecker checks:
+Generates boilerplate code for new mayaLint checks:
 - Test file template
 - Docstring template
 - CHECKS.md entry template
@@ -168,7 +168,7 @@ Option 2: mayapy
 MAYA_TEST_SCRIPT = \'\'\'
 import maya.cmds as cmds
 import maya.api.OpenMaya as om
-from modelChecker import modelChecker_commands as mc
+from mayaLint import mayaLint_commands as mc
 
 # -----------------------------------------------------------------------------
 # Test 1: Pass Case (should PASS - no issues detected)
@@ -351,7 +351,7 @@ if __name__ == "__main__":
     print()
     print("  To execute tests:")
     print("  1. Open Maya")
-    print("  2. Ensure modelChecker is in your Python path")
+    print("  2. Ensure mayaLint is in your Python path")
     print("  3. Copy MAYA_TEST_SCRIPT into Script Editor")
     print("  4. Execute")
     print()
@@ -417,7 +417,7 @@ In Maya:
 
 
 def generate_registration_entry(check):
-    """Generate the modelChecker_list.py entry."""
+    """Generate the mayaLint_list.py entry."""
     func_name = check['function']
     label = check['name']
     category = check['category']
@@ -458,12 +458,12 @@ def main():
 
     # Generate outputs
     print("=" * 70)
-    print("1. FUNCTION TEMPLATE (paste into modelChecker_commands.py)")
+    print("1. FUNCTION TEMPLATE (paste into mayaLint_commands.py)")
     print("=" * 70)
     print(generate_function_template(check))
 
     print("\n" + "=" * 70)
-    print("2. REGISTRATION (paste into modelChecker_list.py)")
+    print("2. REGISTRATION (paste into mayaLint_list.py)")
     print("=" * 70)
     print(generate_registration_entry(check))
 
@@ -492,9 +492,9 @@ def main():
     print("NEXT STEPS")
     print("=" * 70)
     print("""
-1. Copy the FUNCTION TEMPLATE into modelChecker_commands.py
+1. Copy the FUNCTION TEMPLATE into mayaLint_commands.py
 2. Implement the TODO sections in the function
-3. Copy the REGISTRATION entry into modelChecker_list.py
+3. Copy the REGISTRATION entry into mayaLint_list.py
 4. Update the generated test file with specific test logic
 5. Copy the CHECKS.MD ENTRY into CHECKS.md
 6. Run /finish {} to verify and commit

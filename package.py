@@ -1,4 +1,4 @@
-name = "modelChecker"
+name = "mayaLint"
 
 
 @early()
@@ -7,12 +7,12 @@ def version():
 
     sys.path.append(os.getcwd())
 
-    import modelChecker
+    import mayaLint
 
-    return modelChecker.__version__
+    return mayaLint.__version__
 
 
-help = "https://jakejk.io/modelChecker"
+help = "https://jakejk.io/mayaLint"
 
 description = " Sanity checking tool for polygon models in Maya"
 

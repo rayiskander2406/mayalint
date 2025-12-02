@@ -26,8 +26,8 @@ import subprocess
 import sys
 
 RELEASE_PLAN_PATH = ".claude/release-plan.json"
-COMMANDS_FILE = "modelChecker/modelChecker_commands.py"
-LIST_FILE = "modelChecker/modelChecker_list.py"
+COMMANDS_FILE = "mayaLint/mayaLint_commands.py"
+LIST_FILE = "mayaLint/mayaLint_list.py"
 CHECKS_MD = "CHECKS.md"
 TESTS_DIR = "tests"
 

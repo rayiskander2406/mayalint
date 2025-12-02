@@ -1,6 +1,6 @@
-# modelChecker - Checks Reference
+# mayaLint - Checks Reference
 
-This document describes all available checks in modelChecker, including the academic extension checks.
+This document describes all available checks in mayaLint, including the academic extension checks.
 
 ---
 
@@ -227,7 +227,7 @@ Default limit: **10,000 polygons per mesh**
 
 #### Configuration
 
-To change the polygon limit, edit `modelChecker_commands.py`:
+To change the polygon limit, edit `mayaLint_commands.py`:
 
 ```python
 # Find this line near the polyCountLimit function:
@@ -442,7 +442,7 @@ This is a **scene-level check** - it doesn't operate on individual objects.
 
 #### Configuration
 
-To change the expected unit, edit `EXPECTED_LINEAR_UNIT` in `modelChecker_commands.py`:
+To change the expected unit, edit `EXPECTED_LINEAR_UNIT` in `mayaLint_commands.py`:
 
 ```python
 EXPECTED_LINEAR_UNIT = 'cm'  # Change to 'm', 'mm', 'in', 'ft' as needed
@@ -527,7 +527,7 @@ The normalization using median ratio accounts for the fact that different models
 
 #### Configuration
 
-To adjust sensitivity, edit these constants in `modelChecker_commands.py`:
+To adjust sensitivity, edit these constants in `mayaLint_commands.py`:
 
 ```python
 UV_DISTORTION_THRESHOLD = 0.5      # Min ratio (below = compressed)
@@ -608,7 +608,7 @@ The algorithm measures density consistency, not absolute values. This means it w
 
 #### Configuration
 
-To adjust sensitivity, edit these constants in `modelChecker_commands.py`:
+To adjust sensitivity, edit these constants in `mayaLint_commands.py`:
 
 ```python
 TEXEL_DENSITY_THRESHOLD = 0.5        # Min ratio (below = too low density)
@@ -1284,9 +1284,9 @@ print("Intermediate shapes:", intermediates)
 
 ## Adding New Checks
 
-To add a new check to modelChecker:
+To add a new check to mayaLint:
 
-1. Add the check function to `modelChecker_commands.py`:
+1. Add the check function to `mayaLint_commands.py`:
    ```python
    def myCheck(nodes, SLMesh):
        """Docstring with description and limitations."""
@@ -1295,7 +1295,7 @@ To add a new check to modelChecker:
        return ("polygon", errors)  # or "nodes", "vertex", "edge", "uv"
    ```
 
-2. Register in `modelChecker_list.py`:
+2. Register in `mayaLint_list.py`:
    ```python
    "myCheck": {
        'label': 'My Check',

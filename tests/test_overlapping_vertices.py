@@ -78,7 +78,7 @@ Option 3: Standalone (info only)
 MAYA_TEST_SCRIPT = '''
 import maya.cmds as cmds
 import maya.api.OpenMaya as om
-from modelChecker import modelChecker_commands as mc
+from mayaLint import mayaLint_commands as mc
 
 # -----------------------------------------------------------------------------
 # Test 1: Clean Cube (should PASS - no overlapping vertices)
@@ -298,9 +298,9 @@ if __name__ == "__main__":
     print("  To execute tests:")
     print()
     print("  1. Open Maya")
-    print("  2. Ensure modelChecker is in your Python path:")
+    print("  2. Ensure mayaLint is in your Python path:")
     print("     import sys")
-    print("     sys.path.append('/path/to/modelChecker')")
+    print("     sys.path.append('/path/to/mayaLint')")
     print("  3. Copy the MAYA_TEST_SCRIPT from this file into Script Editor")
     print("  4. Execute")
     print()

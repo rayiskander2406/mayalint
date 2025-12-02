@@ -1,6 +1,6 @@
 # Changelog
 
-All notable changes to the modelChecker Academic Extension will be documented in this file.
+All notable changes to the mayaLint Academic Extension will be documented in this file.
 
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
@@ -39,7 +39,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - `CHANGELOG.md` - This file
 
 #### UI Preview
-- `ui-preview/index.html` - Interactive mockup of extended modelChecker
+- `ui-preview/index.html` - Interactive mockup of extended mayaLint
 - `ui-preview/checks-overview.html` - 1-pager explaining all 15 new checks
 - Deployed to Vercel with mobile-responsive design
 - Preview URL: https://modelchecker-preview-guhxbb6ow-rayiskander2406s-projects.vercel.app
@@ -49,8 +49,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - `scene` - Scene-level settings validation (2 checks planned)
 
 ### Changed
-- Extended `modelChecker_commands.py` with new check function
-- Extended `modelChecker_list.py` with new check registration
+- Extended `mayaLint_commands.py` with new check function
+- Extended `mayaLint_list.py` with new check registration
 
 ---
 
@@ -98,7 +98,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 | Version | Checks | Description |
 |---------|--------|-------------|
-| 0.1.4 | 27 | Original modelChecker release |
+| 0.1.4 | 27 | Original mayaLint release |
 | 0.2.0 | 28 | Academic Extension begins (+1 check) |
 | 0.3.0 | 33 | Phase 1 complete (planned) |
 | 0.4.0 | 38 | Phase 2 complete (planned) |
@@ -108,7 +108,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## Links
 
-- [Original modelChecker](https://github.com/JakobJK/modelChecker)
-- [Academic Extension Fork](https://github.com/rayiskander2406/modelChecker)
+- [Original mayaLint](https://github.com/JakobJK/mayaLint)
+- [Academic Extension Fork](https://github.com/rayiskander2406/mayaLint)
 - [UI Preview](https://modelchecker-preview-guhxbb6ow-rayiskander2406s-projects.vercel.app)
 - [Checks Overview](https://modelchecker-preview-guhxbb6ow-rayiskander2406s-projects.vercel.app/checks-overview.html)

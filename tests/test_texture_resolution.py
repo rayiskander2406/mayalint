@@ -72,10 +72,10 @@ MAYA_TEST_SCRIPT = '''
 import maya.cmds as cmds
 import os
 import tempfile
-from modelChecker import modelChecker_commands as mc
+from mayaLint import mayaLint_commands as mc
 
 # Create a temporary directory for test textures
-TEMP_DIR = tempfile.mkdtemp(prefix='modelChecker_test_')
+TEMP_DIR = tempfile.mkdtemp(prefix='mayaLint_test_')
 
 def create_test_texture(width, height, filename):
     """Create a simple test texture file using Maya's rendering capabilities."""
@@ -375,7 +375,7 @@ if __name__ == "__main__":
     print()
     print("  To execute tests:")
     print("    1. Open Maya")
-    print("    2. Ensure modelChecker is in your Python path")
+    print("    2. Ensure mayaLint is in your Python path")
     print("    3. Copy MAYA_TEST_SCRIPT into Script Editor")
     print("    4. Execute")
     print()

@@ -15,9 +15,9 @@ import json
 import maya.cmds as cmds
 import maya.OpenMayaUI as omui
 import maya.api.OpenMaya as om
-import modelChecker.modelChecker_commands as mcc
-import modelChecker.modelChecker_list as mcl
-from modelChecker.__version__ import __version__
+import mayaLint.mayaLint_commands as mcc
+import mayaLint.mayaLint_list as mcl
+from mayaLint.__version__ import __version__
 
 def getMainWindow():
     mainWindowPtr = omui.MQtUtil.mainWindow()
@@ -54,8 +54,8 @@ class UI(QtWidgets.QMainWindow):
     def __init__(self, parent=getMainWindow()):
         super(UI, self).__init__(parent)
 
-        self.setObjectName("ModelCheckerUI")
-        self.setWindowTitle("Model Checker {}".format(self.version))
+        self.setObjectName("MayaLintUI")
+        self.setWindowTitle("MayaLint {}".format(self.version))
         self.diagnostics = {}
         self.currentContextUUID = "Global"
         self.contexts = {
@@ -98,7 +98,7 @@ class UI(QtWidgets.QMainWindow):
             if rowIdx > 1:
                 contextItem.setCheckState(QtCore.Qt.Checked)
             else:
-                cmds.warning("{} is managed by the modelChecker.".format(contextItem.text()))
+                cmds.warning("{} is managed by MayaLint.".format(contextItem.text()))
     
     def uncheckSelected(self):
         indexes = self.contextTable.selectionModel().selectedRows()
@@ -670,10 +670,10 @@ class UI(QtWidgets.QMainWindow):
         settings['commands'] = {}
         for name in self.commandsList:
             settings['commands'][name] = self.commandCheckBox[name].isChecked()
-        cmds.optionVar(sv=("modelCheckerSettings", json.dumps(settings)))
+        cmds.optionVar(sv=("mayaLintSettings", json.dumps(settings)))
     
     def loadSettings(self):
-        settings = cmds.optionVar(q="modelCheckerSettings")
+        settings = cmds.optionVar(q="mayaLintSettings")
         if settings:
             settings = json.loads(settings)
             self.consolidatedCheck.setChecked(settings['consolidated'])

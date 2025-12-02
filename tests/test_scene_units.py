@@ -28,7 +28,7 @@ KNOWN LIMITATIONS
    Some workflows may also require specific angular units.
 
 2. HARD-CODED DEFAULT: The expected unit (cm) is hard-coded.
-   To change it, edit EXPECTED_LINEAR_UNIT in modelChecker_commands.py.
+   To change it, edit EXPECTED_LINEAR_UNIT in mayaLint_commands.py.
 
 3. NO AUTO-FIX: The check doesn't offer to fix units because changing
    units would require scaling all existing geometry.
@@ -58,7 +58,7 @@ Copy MAYA_TEST_SCRIPT into Maya's Script Editor and execute.
 
 MAYA_TEST_SCRIPT = '''
 import maya.cmds as cmds
-from modelChecker import modelChecker_commands as mc
+from mayaLint import mayaLint_commands as mc
 
 # Store original expected unit to restore after tests
 ORIGINAL_EXPECTED = mc.EXPECTED_LINEAR_UNIT
@@ -291,7 +291,7 @@ if __name__ == "__main__":
     print()
     print("  To execute tests:")
     print("    1. Open Maya")
-    print("    2. Ensure modelChecker is in your Python path")
+    print("    2. Ensure mayaLint is in your Python path")
     print("    3. Copy MAYA_TEST_SCRIPT into Script Editor")
     print("    4. Execute")
     print()
@@ -301,7 +301,7 @@ if __name__ == "__main__":
     print("  DEFAULT EXPECTED UNIT: centimeters (cm)")
     print()
     print("  TO CUSTOMIZE EXPECTED UNIT:")
-    print("    Edit EXPECTED_LINEAR_UNIT in modelChecker_commands.py")
+    print("    Edit EXPECTED_LINEAR_UNIT in mayaLint_commands.py")
     print("    Common values: cm, m, mm, in, ft")
     print()
     print("  COMMON UNIT STANDARDS:")

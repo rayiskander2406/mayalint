@@ -1,10 +1,10 @@
-# Contributing to modelChecker Academic Extension
+# Contributing to mayaLint Academic Extension
 
-Thank you for your interest in contributing to the modelChecker Academic Extension! This guide will help you understand our development workflow and standards.
+Thank you for your interest in contributing to the mayaLint Academic Extension! This guide will help you understand our development workflow and standards.
 
 ## Overview
 
-This project extends the original [modelChecker](https://github.com/JakobJK/modelChecker) Maya plugin with 15 additional checks designed for academic evaluation of 3D models.
+This project extends the original [mayaLint](https://github.com/JakobJK/mayaLint) Maya plugin with 15 additional checks designed for academic evaluation of 3D models.
 
 ## Development Workflow
 
@@ -83,11 +83,11 @@ Update `CHECKS.md` with:
 ## File Structure
 
 ```
-modelChecker/
-├── modelChecker/
-│   ├── modelChecker_commands.py  # Check implementations
-│   ├── modelChecker_list.py      # Command registry
-│   └── modelChecker_UI.py        # Maya UI (don't modify)
+mayaLint/
+├── mayaLint/
+│   ├── mayaLint_commands.py  # Check implementations
+│   ├── mayaLint_list.py      # Command registry
+│   └── mayaLint_UI.py        # Maya UI (don't modify)
 ├── tests/
 │   └── test_<check_id>.py        # Test files
 ├── ui-preview/
@@ -139,8 +139,8 @@ feat(checks): add <check_name> check (#X/15)
 Implement <functionName>() to detect <what it detects>.
 
 Changes:
-- Add check function in modelChecker_commands.py
-- Register check in modelChecker_list.py under '<category>'
+- Add check function in mayaLint_commands.py
+- Register check in mayaLint_list.py under '<category>'
 - Add tests in tests/test_<check_id>.py (X test cases)
 - Update CHECKS.md with full documentation
 - Update UI preview (deployed to Vercel)
@@ -161,11 +161,11 @@ Part of Academic Extension - Phase Y, Priority X/15
 
 ## Getting Help
 
-- Review existing checks in `modelChecker_commands.py` for patterns
+- Review existing checks in `mayaLint_commands.py` for patterns
 - Check `CHECKS.md` for documentation examples
 - Look at `tests/test_flipped_normals.py` for test structure
 - Run `/plan-release` to see algorithm hints
 
 ## License
 
-This project is licensed under the MIT License - see the original modelChecker repository for details.
+This project is licensed under the MIT License - see the original mayaLint repository for details.

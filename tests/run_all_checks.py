@@ -44,23 +44,23 @@ import maya.api.OpenMaya as om
 from collections import defaultdict
 import traceback
 
-# Try to import modelChecker
+# Try to import mayaLint
 try:
-    from modelChecker import modelChecker_commands as mc
+    from mayaLint import mayaLint_commands as mc
     MODELCHECKER_AVAILABLE = True
 except ImportError:
     print("=" * 70)
-    print("  ERROR: modelChecker not found!")
+    print("  ERROR: mayaLint not found!")
     print("=" * 70)
     print("")
-    print("  To fix this, add modelChecker to your Python path:")
+    print("  To fix this, add mayaLint to your Python path:")
     print("")
     print("  Option 1 - In Maya Script Editor, run this first:")
     print("    import sys")
-    print("    sys.path.append('/path/to/modelChecker/parent/folder')")
+    print("    sys.path.append('/path/to/mayaLint/parent/folder')")
     print("")
     print("  Option 2 - Add to Maya.env file:")
-    print("    PYTHONPATH=/path/to/modelChecker/parent/folder")
+    print("    PYTHONPATH=/path/to/mayaLint/parent/folder")
     print("")
     print("=" * 70)
     MODELCHECKER_AVAILABLE = False
@@ -231,7 +231,7 @@ def run_validation():
     print("")
 
     if not MODELCHECKER_AVAILABLE:
-        print("  ABORTED: modelChecker module not available")
+        print("  ABORTED: mayaLint module not available")
         print("")
         return False
 
@@ -383,7 +383,7 @@ if __name__ == "__main__":
     print()
     print("  TO RUN:")
     print("    1. Open Maya")
-    print("    2. Ensure modelChecker is in your Python path")
+    print("    2. Ensure mayaLint is in your Python path")
     print("    3. Copy MAYA_VALIDATION_SCRIPT into Script Editor")
     print("    4. Execute (Ctrl+Enter)")
     print()
