@@ -624,11 +624,11 @@
                 name: 'Unused Nodes',
                 category: 'scene',
                 phase: 2,
-                status: 'planned',
+                status: 'completed',
                 icon: '🗑️',
                 description: 'Finds unused materials, textures, and nodes cluttering the scene file.',
                 whyMatters: 'Scene clutter indicates unprofessional work habits and increases file size.',
-                howItWorks: 'Traces node connections and identifies materials/textures with no mesh assignments.',
+                howItWorks: 'Checks shading engines for geometry assignments, finds orphaned materials not connected to any shading group.',
                 commonCauses: 'Deleted objects leaving orphaned materials, testing different shaders'
             },
             {

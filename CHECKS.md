@@ -754,6 +754,94 @@ In Maya or image editing software:
 
 ---
 
+### Unused Nodes
+
+**Category:** Scene
+**Function:** `unusedNodes`
+**Returns:** Nodes (unused shading groups and materials)
+
+#### Description
+
+Detects materials and shading groups that are not assigned to any geometry in the scene. Unused nodes indicate:
+- Leftover materials from deleted objects
+- Imported materials that were never used
+- Duplicate materials from copy-paste operations
+- Unprofessional scene organization
+- Unnecessary file size increase
+
+A clean scene with only necessary nodes demonstrates professional workflow practices.
+
+#### How It Works
+
+1. Get all shading engines (`shadingEngine` nodes) in the scene
+2. For each shading engine, check if it has any geometry assigned using `cmds.sets()`
+3. Identify shading engines with no assignments (excluding defaults)
+4. Also check for orphaned materials not connected to any shading engine
+5. Return list of unused node UUIDs
+
+**Material types checked:** lambert, blinn, phong, phongE, standardSurface, aiStandardSurface, surfaceShader, useBackground
+
+**Excluded defaults:**
+- Shading groups: `initialShadingGroup`, `initialParticleSE`
+- Materials: `lambert1`, `particleCloud1`, `standardSurface1`
+
+#### Known Limitations
+
+| Limitation | Impact | Workaround |
+|------------|--------|------------|
+| Materials only | Doesn't detect unused textures | Use missingTextures check |
+| No utility nodes | samplerInfo, multiplyDivide not checked | Manual cleanup |
+| Intentional unused | Reference materials may be flagged | Review before deleting |
+| Referenced files | May flag materials from references | Check reference structure |
+| Default materials | Never flagged even if unused | This is intended behavior |
+
+#### When This Check Helps
+
+- **Scene cleanup**: Find and remove unused materials before delivery
+- **File size optimization**: Reduce scene file size
+- **Assignment submission**: Demonstrate clean workflow habits
+- **Collaboration**: Clean scenes are easier for others to work with
+- **Pipeline compliance**: Meet studio scene organization standards
+
+#### How to Fix
+
+In Maya:
+
+1. **Using Hypershade:**
+   - Open **Hypershade** (Window > Rendering Editors > Hypershade)
+   - Go to **Edit > Delete Unused Nodes**
+   - This removes all unused shading nodes
+
+2. **Using Optimize Scene Size:**
+   - Go to **File > Optimize Scene Size**
+   - Check "Remove unused materials"
+   - Click "Optimize"
+
+3. **Manual cleanup:**
+   - Select the flagged node in Hypershade
+   - Verify it's not needed
+   - Press Delete
+
+4. **Prevention:**
+   - Delete materials when deleting objects
+   - Use "Delete Unused Nodes" regularly during work
+   - Don't import materials you don't need
+
+#### Test Cases
+
+| Test | Expected Result |
+|------|-----------------|
+| New scene | PASS (no unused nodes) |
+| Material not assigned | FAIL (flagged) |
+| Material assigned to geometry | PASS |
+| Orphaned material (no shading group) | FAIL (flagged) |
+| lambert1 | PASS (default, never flagged) |
+| initialShadingGroup | PASS (default, never flagged) |
+| Multiple unused materials | All flagged |
+| Mixed used/unused | Only unused flagged |
+
+---
+
 ## Adding New Checks
 
 To add a new check to modelChecker:

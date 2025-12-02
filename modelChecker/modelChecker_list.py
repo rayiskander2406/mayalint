@@ -138,5 +138,9 @@ mcCommandsList = {
     "textureResolution": {
         'label': 'Texture Resolution',
         'category': 'materials',
+    },
+    "unusedNodes": {
+        'label': 'Unused Nodes',
+        'category': 'scene',
     }
 }

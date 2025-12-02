@@ -1143,3 +1143,98 @@ def textureResolution(_, __):
             pass
 
     return "nodes", nonPowerOfTwoNodes
+
+
+# Default shading groups that should never be flagged as unused
+DEFAULT_SHADING_GROUPS = {'initialShadingGroup', 'initialParticleSE'}
+# Default materials that should never be flagged as unused
+DEFAULT_MATERIALS = {'lambert1', 'particleCloud1', 'standardSurface1'}
+
+
+def unusedNodes(_, __):
+    """Detect unused materials and shading nodes that clutter the scene.
+
+    This check identifies materials and shading groups that are not assigned
+    to any geometry. Unused nodes indicate:
+    - Leftover materials from deleted objects
+    - Imported materials that were never used
+    - Duplicate materials from copy-paste operations
+    - Unprofessional scene organization
+    - Unnecessary file size increase
+
+    Algorithm:
+        1. Get all shading engines (shadingEngine nodes) in the scene
+        2. For each shading engine, check if it has any geometry assigned
+        3. Identify shading engines with no assignments (excluding defaults)
+        4. Also check for orphaned materials not connected to any shading engine
+        5. Return list of unused node UUIDs
+
+    Args:
+        _: Not used (scene-level check)
+        __: Not used (scene-level check)
+
+    Returns:
+        tuple: ("nodes", list) where list contains UUIDs of unused
+               shading engines and materials
+
+    Known Limitations:
+        - Does not detect unused textures (use with missingTextures)
+        - Does not detect unused utility nodes (samplerInfo, etc.)
+        - Some unused materials may be kept for reference
+        - Materials in referenced files may appear unused
+        - Does not flag default Maya materials (lambert1, etc.)
+
+    Academic Use:
+        A clean scene with only the necessary nodes demonstrates
+        professional workflow practices. Instructors often check for
+        scene organization as part of grading. Unused materials
+        suggest sloppy work habits and are a common issue in
+        student submissions.
+    """
+    unusedNodesList = []
+
+    # Get all shading engines in the scene
+    shadingEngines = cmds.ls(type='shadingEngine') or []
+
+    for shadingEngine in shadingEngines:
+        # Skip default shading groups
+        if shadingEngine in DEFAULT_SHADING_GROUPS:
+            continue
+
+        # Check if this shading engine has any geometry assigned
+        # The 'dagSetMembers' attribute lists connected geometry
+        try:
+            members = cmds.sets(shadingEngine, query=True) or []
+            if len(members) == 0:
+                # No geometry assigned - this is unused
+                uuid = cmds.ls(shadingEngine, uuid=True)
+                if uuid:
+                    unusedNodesList.append(uuid[0])
+        except Exception:
+            pass  # Skip problematic shading engines
+
+    # Also check for orphaned materials (materials not connected to any shading engine)
+    # This catches materials that were disconnected but not deleted
+    materialTypes = ['lambert', 'blinn', 'phong', 'phongE', 'standardSurface',
+                     'aiStandardSurface', 'surfaceShader', 'useBackground']
+
+    for matType in materialTypes:
+        materials = cmds.ls(type=matType) or []
+        for material in materials:
+            # Skip default materials
+            if material in DEFAULT_MATERIALS:
+                continue
+
+            # Check if material is connected to any shading engine
+            try:
+                connections = cmds.listConnections(material + '.outColor',
+                                                    type='shadingEngine') or []
+                if len(connections) == 0:
+                    # Material not connected to any shading engine
+                    uuid = cmds.ls(material, uuid=True)
+                    if uuid:
+                        unusedNodesList.append(uuid[0])
+            except Exception:
+                pass  # Skip problematic materials
+
+    return "nodes", unusedNodesList
