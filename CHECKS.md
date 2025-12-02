@@ -15,6 +15,7 @@ This document describes all available checks in modelChecker, including the acad
   - [Flipped Normals](#flipped-normals)
   - [Overlapping Vertices](#overlapping-vertices)
   - [Poly Count Limit](#poly-count-limit)
+  - [Missing Textures](#missing-textures)
 
 ---
 
@@ -277,6 +278,74 @@ To check polygon count manually:
 
 ---
 
+### Missing Textures
+
+**Category:** Materials
+**Function:** `missingTextures`
+**Returns:** Nodes (file texture nodes with missing files)
+
+#### Description
+
+Detects file texture nodes in the scene where the referenced texture file does not exist on disk. Missing textures are a common issue that causes:
+- Pink/magenta rendering in viewports and renders
+- Failed exports to game engines
+- Broken material appearance
+- File path issues when moving projects between computers
+
+#### How It Works
+
+1. Finds all 'file' texture nodes in the scene using `cmds.ls(type='file')`
+2. For each file node, gets the `fileTextureName` attribute
+3. Checks if the file exists on disk using `os.path.exists`
+4. Flags nodes where the path is set but the file doesn't exist
+
+#### Known Limitations
+
+| Limitation | Impact | Workaround |
+|------------|--------|------------|
+| Only checks 'file' nodes | Other texture types (psdFileTex, etc.) not checked | Use Maya's native file path editor for comprehensive check |
+| UDIM patterns not resolved | Patterns like `texture.<UDIM>.exr` flagged as missing | Manually verify UDIM textures exist |
+| Network paths | May report missing if network unavailable | Ensure network is accessible before checking |
+| Relative paths | Resolved from Maya's working directory | Use absolute paths or set project correctly |
+
+#### When This Check Helps
+
+- **Before submission**: Catch missing textures before handing in assignments
+- **Moving projects**: Identify broken texture paths after moving files between computers
+- **Team collaboration**: Verify texture paths work on different machines
+- **Export preparation**: Ensure all textures exist before exporting to game engines
+
+#### When to Ignore Results
+
+- UDIM texture patterns (known limitation)
+- Intentionally disconnected file nodes waiting for textures
+- Placeholder textures during development
+
+#### How to Fix
+
+In Maya:
+1. Select the file texture node from the check results
+2. Open the **Attribute Editor** (Ctrl+A)
+3. Browse to select a valid texture file
+4. Or use **File > Set Project** to fix relative path issues
+
+Alternative:
+1. Go to **Windows > General Editors > File Path Editor**
+2. Review and fix all file paths at once
+
+#### Test Cases
+
+| Test | Expected Result |
+|------|-----------------|
+| Scene with no file nodes | PASS |
+| File node with existing texture | PASS |
+| File node with missing texture | FAIL (flagged) |
+| File node with empty path | PASS (skipped) |
+| Multiple textures (mixed valid/missing) | Only missing flagged |
+| Texture connected to material | Still checked (flagged if missing) |
+
+---
+
 ## Adding New Checks
 
 To add a new check to modelChecker:
@@ -312,3 +381,4 @@ To add a new check to modelChecker:
 | 0.2.0 | Academic extension: Added flippedNormals check |
 | 0.2.1 | Academic extension: Added overlappingVertices check |
 | 0.2.2 | Academic extension: Added polyCountLimit check |
+| 0.2.3 | Academic extension: Added missingTextures check |

@@ -617,3 +617,66 @@ def polyCountLimit(nodes, SLMesh):
         selIt.next()
 
     return "nodes", overLimit
+
+
+def missingTextures(nodes, _):
+    """Detect file texture nodes referencing missing or non-existent files.
+
+    This check identifies file texture nodes in the scene where the referenced
+    texture file does not exist on disk. Missing textures are a common issue
+    that causes:
+    - Pink/magenta rendering in viewports and renders
+    - Failed exports to game engines
+    - Broken material appearance
+    - File path issues when moving projects between computers
+
+    Algorithm:
+        1. Find all 'file' texture nodes in the scene
+        2. For each file node, get the 'fileTextureName' attribute
+        3. Check if the file exists on disk using os.path.exists
+        4. Flag nodes where the file path is set but file doesn't exist
+
+    Args:
+        nodes: List of node UUIDs to check (not used - scene-wide check)
+        _: MSelectionList (not used - scene-wide check)
+
+    Returns:
+        tuple: ("nodes", list) where list contains UUIDs of file texture
+               nodes with missing texture files
+
+    Known Limitations:
+        - Only checks 'file' node type (not procedural textures)
+        - Does not resolve UDIM patterns or animated textures
+        - Network paths may report as missing if network is unavailable
+        - Relative paths are resolved from Maya's current working directory
+
+    Academic Use:
+        Students often encounter missing textures when:
+        - Moving projects between home and school computers
+        - Using absolute paths instead of relative paths
+        - Forgetting to include textures when submitting assignments
+        This check helps catch these issues before submission.
+    """
+    import os
+
+    missingFiles = []
+
+    # Get all file texture nodes in the scene
+    fileNodes = cmds.ls(type='file') or []
+
+    for fileNode in fileNodes:
+        # Get the file path from the texture node
+        texturePath = cmds.getAttr(fileNode + '.fileTextureName')
+
+        # Skip if no path is set (empty string)
+        if not texturePath:
+            continue
+
+        # Check if the file exists
+        if not os.path.exists(texturePath):
+            # Get UUID for the file node
+            uuid = cmds.ls(fileNode, uuid=True)
+            if uuid:
+                missingFiles.append(uuid[0])
+
+    return "nodes", missingFiles

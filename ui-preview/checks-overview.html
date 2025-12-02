@@ -550,11 +550,11 @@
                 name: 'Missing Textures',
                 category: 'materials',
                 phase: 1,
-                status: 'planned',
+                status: 'completed',
                 icon: '🖼️',
                 description: 'Detects broken file texture paths that will cause missing textures when rendering or opening on another computer.',
                 whyMatters: 'Submitting a project with missing textures is a guaranteed way to lose points.',
-                howItWorks: 'Scans all file texture nodes and verifies the referenced files exist.',
+                howItWorks: 'Scans all file texture nodes and verifies the referenced files exist using os.path.exists().',
                 commonCauses: 'Moved texture files, absolute paths, missing project folder structure'
             },
             {

@@ -114,5 +114,9 @@ mcCommandsList = {
     "polyCountLimit": {
         'label': 'Poly Count Limit',
         'category': 'general',
+    },
+    "missingTextures": {
+        'label': 'Missing Textures',
+        'category': 'materials',
     }
 }
