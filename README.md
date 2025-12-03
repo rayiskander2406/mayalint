@@ -34,17 +34,27 @@ You should see a folder called `modelChecker-main` with a `mayaLint` folder insi
 
 ### Step 4: Copy the mayaLint folder
 
-Copy the `mayaLint` folder (the one with the Python files inside) into your Maya scripts folder.
+> **Important:** Copy the **entire `mayaLint` folder** - not the individual `.py` files inside it. The folder structure matters!
 
-Your scripts folder should now look like this:
+Drag the `mayaLint` folder into your Maya scripts folder.
+
+**Correct** - your scripts folder should look like this:
 ```
 scripts/
-  mayaLint/
+  mayaLint/           <-- the folder
+    __init__.py
+    __version__.py
     mayaLint_UI.py
     mayaLint_commands.py
     mayaLint_list.py
-    __init__.py
-    __version__.py
+```
+
+**Wrong** - don't copy loose files like this:
+```
+scripts/
+  mayaLint_UI.py      <-- won't work!
+  mayaLint_commands.py
+  ...
 ```
 
 ### Step 5: Restart Maya
@@ -101,10 +111,12 @@ See [CHECKS.md](CHECKS.md) for the full list.
 
 ### "No module named mayaLint"
 
-The mayaLint folder is in the wrong place. Make sure:
-- It's directly inside the `scripts` folder
-- You copied `mayaLint` (not `modelChecker-main`)
-- Restart Maya after copying
+This usually means the folder structure is wrong. Check that:
+1. You copied the **`mayaLint` folder itself** (not just the `.py` files inside it)
+2. The folder is directly inside `scripts/` (not nested in another folder)
+3. You restarted Maya after copying
+
+Go back to Step 4 and check your folder structure matches the "Correct" example.
 
 ### The window doesn't open
 
