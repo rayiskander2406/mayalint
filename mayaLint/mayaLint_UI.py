@@ -85,7 +85,8 @@ class UI(QtWidgets.QMainWindow):
         left.setLayout(checks)
         right.setLayout(report)
         mainLayout.addWidget(splitter)
-        self.resize(1000, 900)
+        self.setMinimumSize(600, 400)  # Minimum size so buttons are always visible
+        self.resize(900, 700)  # Default size - user can resize as needed
         self.loadSettings()
         self.createReport("Global")
         self.consolidatedCheck.stateChanged.connect(self.changeConsolidated)
@@ -298,8 +299,17 @@ class UI(QtWidgets.QMainWindow):
 
     def buildChecksList(self):
         checks = QtWidgets.QVBoxLayout()
+
+        # Create a scroll area for the checks so the window can be resized smaller
+        scrollArea = QtWidgets.QScrollArea()
+        scrollArea.setWidgetResizable(True)
+        scrollArea.setHorizontalScrollBarPolicy(QtCore.Qt.ScrollBarAlwaysOff)
+        scrollWidget = QtWidgets.QWidget()
+        scrollLayout = QtWidgets.QVBoxLayout(scrollWidget)
+        scrollArea.setWidget(scrollWidget)
+
         category = self.getCategories(self.commandsList)
-        
+
         for obj in category:
             self.categoryWidget[obj] = QtWidgets.QWidget()
             self.categoryLayout[obj] = QtWidgets.QVBoxLayout()
@@ -319,8 +329,8 @@ class UI(QtWidgets.QMainWindow):
             self.categoryHeader[obj].addWidget(self.categoryButton[obj])
             self.categoryHeader[obj].addWidget(self.categoryCollapse[obj])
             self.categoryWidget[obj].setLayout(self.categoryLayout[obj])
-            checks.addLayout(self.categoryHeader[obj])
-            checks.addWidget(self.categoryWidget[obj])
+            scrollLayout.addLayout(self.categoryHeader[obj])
+            scrollLayout.addWidget(self.categoryWidget[obj])
 
         for name in sorted(self.commandsList.keys()):
             label = self.commandsList[name]['label']
@@ -360,7 +370,12 @@ class UI(QtWidgets.QMainWindow):
             self.commandLayout[name].addWidget(self.commandRunButton[name])
             self.commandLayout[name].addWidget(self.errorNodesButton[name])
 
-        checks.addStretch()
+        scrollLayout.addStretch()
+
+        # Add the scroll area containing all checks to the main layout
+        checks.addWidget(scrollArea)
+
+        # Buttons below the scroll area - always visible
         checkButtonsLayout = QtWidgets.QHBoxLayout()
         checks.addLayout(checkButtonsLayout)
 
